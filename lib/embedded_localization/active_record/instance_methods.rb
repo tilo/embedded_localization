@@ -62,7 +62,11 @@ module EmbeddedLocalization
             missing[attr.to_sym] = missing_locales
           end
         end
-        return missing
+        if attribute.nil?
+          return missing
+        else
+          return missing[attribute.to_sym]
+        end
       end
 
       private

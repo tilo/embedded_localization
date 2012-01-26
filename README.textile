@@ -69,6 +69,23 @@ end
 
 Note that the ActiveRecord model @Genre@ must already exist and have a @translates@ directive listing the translated fields.
 
+h3. Rails 3.0 + Embedded_Localization version < 0.2.0
+
+<pre><code>
+class CreateGenres < ActiveRecord::Migration
+  def self.up
+    create_table :genres do |t|
+      t.text   :i18n    # this will be deprecated in 0.2.0
+      t.timestamps
+    end
+  end
+  def self.down
+    drop_table :posts
+  end
+end
+</code></pre>
+
+
 h2. I18n fallbacks for empty translations
 
 It is possible to enable fallbacks for empty translations. It will depend on the configuration setting you have set for I18n translations in your Rails config.

@@ -18,16 +18,20 @@ To install Embedded_Localization, use:
 
 <pre><code>
 $ gem install embedded_localization
+
 </code></pre>
 
 h2. Model translations
 
 Model translations allow you to translate your models' attribute values. The attribute type needs to be string or text, and you need to generate the database fields as usual with ActiveRecord database migrations. e.g.:
 
+<font color='red'>Note for version <0.2.0:</font> do not define the attributes in the DB migration, but define one text field :i18n for each table which uses Embedded_Localization
+
 <pre><code>
 class Genre < ActiveRecord::Base
   translates :name, :description
 end
+
 </code></pre>
 
 This allows you to translate the attributes :name and :description per locale:

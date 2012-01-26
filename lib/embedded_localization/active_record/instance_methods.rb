@@ -2,6 +2,9 @@ module EmbeddedLocalization
   module ActiveRecord
     module InstanceMethods
 
+      # maybe a better way to do this is to use a special class LocalizedAttribute < HashWithIndifferentAccess
+      # and use the [] , []= operators... hmm... thinking...
+
       def get_localized_attribute(attr_name, locale)
         if ! self.i18n.has_key?(locale)
           return self.i18n[ I18n.default_locale ][attr_name] if ActsAsI18n.fallback?

@@ -2,6 +2,20 @@ module EmbeddedLocalization
   module ActiveRecord
     module InstanceMethods
 
+      def get_localized_attribute(attr_name, locale)
+        if ! self.i18n.has_key?(locale)
+          return self.i18n[ I18n.default_locale ][attr_name] if ActsAsI18n.fallback?
+          return nil
+        else
+          self.i18n[locale][attr_name]
+        end
+      end
+        
+      def set_localized_attribute(attr_name, locale, new_translation)
+        self.i18n[locale] ||= HashWithIndifferentAccess.new
+        self.i18n[locale][attr_name] = new_translation
+      end
+
       # Returns all locales used for translation of all documents of this class.
       # returns an Array of Symbols
       #

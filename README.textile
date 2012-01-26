@@ -150,6 +150,7 @@ Each model instance of a class which uses Embedded_Localization will have these 
   <li>list of translated attributes
   <li>hash of translation coverage for a given record's attributes or a particular attribute
   <li>hash of missing translations for a given record's attributes or a particular attribute
+  <li>directly setting and getting attribute values for a given locale; without having to change <code>I18n.locale</code>
 </ul>
 
 e.g.:    
@@ -178,6 +179,12 @@ e.g.:
 
    g.translation_missing(:display)
    # => {}     # this indicates that there are no missing translations for the :display attribute
+
+   g.get_localized_attribute(:name, :de)
+   # => nil
+
+   g.set_localized_attribute(:name, :de, "Science-Fiction")
+   # => "Science-Fiction"
 
 </code></pre>
 

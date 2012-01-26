@@ -33,14 +33,14 @@ module EmbeddedLocalization
         attrs = {}
         self.i18n.each do |lang,hash|
           hash.keys.each do |attr|
-            attrs[attr] ||= []
-            attrs[attr] << lang
+            attrs[attr.to_sym] ||= []
+            attrs[attr.to_sym] << lang
           end
         end
         if attribute.nil?
-          attrs
+          return attrs
         else
-          attrs[attribute]
+          return attrs[attribute.to_sym]
         end
       end
 
@@ -53,17 +53,16 @@ module EmbeddedLocalization
       # e.g. each locale must be present in at least one of the translated attributes
       #
       def translation_missing( attribute = nil )
-        missing_locales = {}
+        missing = {}
         current_locales_used = translated_locales  # ... across all attributes
-        current_translation_coverage = translation_coverage
 
-        translation_coverage.each do |attr|
-          missing_locales = current_locales_used - current_translation_coverage[attr]
+        translated_attributes.each do |attr|
+          missing_locales = current_locales_used - translation_coverage(attr.to_sym)
           if missing_locales.size > 0
-            missing_locales[attr] = missing_locales
+            missing[attr.to_sym] = missing_locales
           end
         end
-        return missing_locales
+        return missing
       end
 
       private

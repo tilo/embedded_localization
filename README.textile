@@ -1,0 +1,183 @@
+h1. Embedded Localization
+
+Embedded_Localization is a Rails 3 localization gem, targeted at ActiveRecord 3. It is compatible with and builds on the new "I18n API in Ruby on Rails":http://guides.rubyonrails.org/i18n.html and adds model translations to ActiveRecord.
+
+Embedded_Localization is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!  Make sure that your database default encoding is UTF-8 or UFT-16.
+
+Model translations with Embedded_Localization use default ActiveRecord features and do not limit any ActiveRecord functionality.
+
+
+h2. Requirements
+
+ActiveRecord > 3.0.0.rc
+I18n
+
+h2. Installation
+
+To install Embedded_Localization, use:
+
+<pre><code>
+$ gem install embedded_localization
+</code></pre>
+
+h2. Model translations
+
+Model translations allow you to translate your models' attribute values. The attribute type needs to be string or text, and you need to generate the database fields as usual with ActiveRecord database migrations. e.g.:
+
+<pre><code>
+class Genre < ActiveRecord::Base
+  translates :name, :description
+end
+</code></pre>
+
+This allows you to translate the attributes :name and :description per locale:
+
+<pre><code>
+I18n.locale = :en
+g = Genre.first
+g.name  # => 'science fiction'
+
+I18n.locale = :jp
+g.name  # => "サイエンスフィクション"
+
+I18n.locale = :ko
+g.name  # => "공상 과학 소설"
+</code></pre>
+
+No extra tables needed for this!
+
+h3. Rails 3.0
+
+<pre><code>
+class CreateGenres < ActiveRecord::Migration
+  def self.up
+    create_table :genres do |t|
+      t.string :name
+      t.text   :description
+      t.timestamps
+    end
+  end
+  def self.down
+    drop_table :posts
+  end
+end
+</code></pre>
+
+Note that the ActiveRecord model @Genre@ must already exist and have a @translates@ directive listing the translated fields.
+
+h2. I18n fallbacks for empty translations
+
+It is possible to enable fallbacks for empty translations. It will depend on the configuration setting you have set for I18n translations in your Rails config.
+
+You can enable them by adding the next line to @config/application.rb@ (or only @config/environments/production.rb@ if you only want them in production)
+
+<pre><code>config.i18n.fallbacks = true</code></pre>
+
+By default, Embedded_Localization will only use fallbacks when the translation value for the item you've requested is @nil@.
+
+<pre><code>
+class Genre < ActiveRecord::Base
+  translates :name, :description
+end
+
+I18n.locale = :en
+g = Genre.first
+g.name  # => 'science fiction'
+
+I18n.locale = :jp
+g.name  # => "サイエンスフィクション"
+
+I18n.locale = :de
+g.name  # => nil
+
+I18n.fallbacks = true
+I18n.locale = :de
+g.name  # => 'science fiction'
+</code></pre>
+
+
+h2. Want some Candy?
+
+It's nice to have the values of attributes be set or read with the current locale, but Embedded_Localization offers you a couple of additional features..
+
+h3. Class Methods
+
+Each class which uses Embedded_Localization will have these additional methods defined:
+<ul>
+  <li>Klass.translated_attributes
+  <li>Klass.translated?
+  <li>Klass.fallback?
+</ul> 
+
+e.g.: 
+
+<pre><code>
+   Genre.translated_attributes # => [:name,:description]
+   Genre.translated?  # => true
+   Genre.fallback?  # => false
+</code></pre>
+
+h3. Instance Methods
+
+Each model instance of a class which uses Embedded_Localization will have these additional features:
+
+<ul>
+  <li>on-the-fly translations
+  <li>list of translated locales
+  <li>list of translated attributes
+  <li>hash of translation coverage for a given record's attribute(s)
+  <li>hash of missing translations for a given record's attribute(s)
+</ul>
+
+e.g.:    
+
+<pre><code>
+   I18n.locale = :jp
+   g = Genre.first
+   g.name  # => "サイエンスフィクション"
+
+   g.name(:en)  # => 'science fiction'
+   g.name(:ko)  # => "공상 과학 소설"
+   g.name(:de)  # => nil
+
+   g.translated_locales  # => [:en,:jp,:ko]
+   gtranslated_attributes # => [:name,:description]
+   g.translated?  # => true
+
+   g.translation_coverage 
+   # => {"name"=>["en", "ko", "jp"] , "description"=>["en", "de", "fr", "ko", "jp", "es"]} 
+
+   g.translation_coverage(:name)
+   # => {"name"=>["en", "ko", "jp"]}
+
+   g.translation_missing
+   # => {"name"=>["de", "fr", "es"]}
+
+   g.translation_missing(:display)
+   # => {}
+</code></pre>
+
+
+h2. Changes
+
+This is the initial version.
+
+h2. Alternative Solutions
+
+* "Mongoid":https://github.com/mongoid/mongoid - awesome Ruby ORM for MongoDB, which includes in-table localization of attributes (mongoid >= 2.3.0)
+* "Globalize3":https://github.com/svenfuchs/globalize3 - is an awesome gem, but different approach with more tables in the schema.
+* "Veger's fork":http://github.com/veger/globalize2 - uses default AR schema for the default locale, delegates to the translations table for other locales only
+* "TranslatableColumns":http://github.com/iain/translatable_columns - have multiple languages of the same attribute in a model (Iain Hecker)
+* "localized_record":http://github.com/glennpow/localized_record - allows records to have localized attributes without any modifications to the database (Glenn Powell)
+* "model_translations":http://github.com/janne/model_translations - Minimal implementation of Globalize2 style model translations (Jan Andersson)
+
+h2. Related solutions
+
+* "globalize2_versioning":http://github.com/joshmh/globalize2_versioning - acts_as_versioned style versioning for globalize2 (Joshua Harvey)
+* "i18n_multi_locales_validations":http://github.com/ZenCocoon/i18n_multi_locales_validations - multi-locales attributes validations to validates attributes from globalize2 translations models (Sébastien Grosjean)
+* "globalize2 Demo App":http://github.com/svenfuchs/globalize2-demo - demo application for globalize2 (Sven Fuchs)</li>
+* "migrate_from_globalize1":http://gist.github.com/120867 - migrate model translations from Globalize1 to globalize2 (Tomasz Stachewicz)</li>
+* "easy_globalize2_accessors":http://github.com/astropanic/easy_globalize2_accessors - easily access (read and write) globalize2-translated fields (astropanic, Tomasz Stachewicz)</li>
+* "globalize2-easy-translate":http://github.com/bsamman/globalize2-easy-translate - adds methods to easily access or set translated attributes to your model (bsamman)</li>
+* "batch_translations":http://github.com/alvarezrilla/batch_translations - allow saving multiple globalize2 translations in the same request (Jose Alvarez Rilla)</li>
+

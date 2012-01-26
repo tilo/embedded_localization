@@ -85,6 +85,7 @@ class CreateGenres < ActiveRecord::Migration
 end
 </code></pre>
 
+Please note, if you use Embedded_Localization with version < 0.2.0, that you should not define the translated attributes in the migrations -- instead define one text attribute with the name :i18n -- this will change in version 0.2.0
 
 h2. I18n fallbacks for empty translations
 
@@ -114,6 +115,7 @@ g.name  # => nil
 I18n.fallbacks = true
 I18n.locale = :de
 g.name  # => 'science fiction'
+
 </code></pre>
 
 
@@ -136,12 +138,12 @@ e.g.:
    Genre.translated_attributes # => [:name,:description]
    Genre.translated?  # => true
    Genre.fallback?  # => false
+
 </code></pre>
 
 h3. Instance Methods
 
 Each model instance of a class which uses Embedded_Localization will have these additional features:
-
 <ul>
   <li>on-the-fly translations, via <code>.name(:locale)</code>
   <li>list of translated locales
@@ -175,7 +177,8 @@ e.g.:
    # => {"name"=>["de", "fr", "es"]}
 
    g.translation_missing(:display)
-   # => {}
+   # => {}     # this indicates that there are no missing translations for the :display attribute
+
 </code></pre>
 
 

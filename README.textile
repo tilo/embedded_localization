@@ -122,11 +122,11 @@ h3. Instance Methods
 Each model instance of a class which uses Embedded_Localization will have these additional features:
 
 <ul>
-  <li>on-the-fly translations
+  <li>on-the-fly translations, via <code>.name(:locale)</code>
   <li>list of translated locales
   <li>list of translated attributes
-  <li>hash of translation coverage for a given record's attribute(s)
-  <li>hash of missing translations for a given record's attribute(s)
+  <li>hash of translation coverage for a given record's attributes or a particular attribute
+  <li>hash of missing translations for a given record's attributes or a particular attribute
 </ul>
 
 e.g.:    
@@ -141,7 +141,7 @@ e.g.:
    g.name(:de)  # => nil
 
    g.translated_locales  # => [:en,:jp,:ko]
-   gtranslated_attributes # => [:name,:description]
+   g.translated_attributes # => [:name,:description]
    g.translated?  # => true
 
    g.translation_coverage 

@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
 transparently store translations of attributes right inside each record -- no extra database tables needed to store \
 the localization data!}
 
-  s.rubyforge_project = "embedded_localization"
+#  s.rubyforge_project = "embedded_localization"
+  s.rubyforge_project = "[none]"
 
   # s.platform = Gem::Platform::RUBY
 

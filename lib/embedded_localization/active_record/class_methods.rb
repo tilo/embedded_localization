@@ -16,8 +16,10 @@ module EmbeddedLocalization
         translated_attribute_names.include?(name.to_sym)
       end
 
-      def fallback?
-        translation_options[:fallback]
+      # determine if we are using fallbacks
+      def fallbacks?
+        Rails.application.config.i18n.fallbacks   # check if fallbacks are configured in the application.rb file
+        # translation_options[:fallbacks]   # not using Gem specific options anymore
       end
     end
   end

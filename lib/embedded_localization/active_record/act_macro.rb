@@ -4,20 +4,28 @@ module EmbeddedLocalization
       def translates(*attr_names)
         return if translates?  # cludge to make sure we don't set this up twice..
 
-        options = attr_names.extract_options!
-        # options[:fallback] => true or false
+        # for details about I18n fallbacks, check the source:
+        # i18n-0.6.0/lib/i18n/backend/fallbacks.rb  
+        # i18n-0.6.0/lib/i18n/locale/fallbacks.rb
+
+        # options[:fallbacks] => true or false # not used at this time
+#        options = attr_names.extract_options!
 
         class_attribute :translated_attribute_names, :translation_options
         self.translated_attribute_names = attr_names.map(&:to_sym).sort.uniq
-        self.translation_options        = options
+#        self.translation_options        = options
 
         include InstanceMethods
         extend  ClassMethods
 
         # if ActiveRecord::Base is in the parent-chain of the class where we are included into:
+        # ::Rails::Railtie.subclasses.map(&:to_s).include?("ActiveRecord::Railtie")
+
         serialize :i18n   # we should also protect it from direct assignment by the user
         
         # if Mongoid::Document is in the list of classes which extends the class we are included into:
+        # ::Rails::Railtie.subclasses.map(&:to_s).include?("Rails::Mongoid::Railtie")
+
         #    field :i18n, type: Hash
         # but on the other hand, Mongoid now supports "localized fields" -- so we don't need to re-implement this.
         # Yay! Durran Jordan is awesome! :-) See: http://mongoid.org/docs/documents/localized.html
@@ -33,7 +41,6 @@ module EmbeddedLocalization
 
         after_initialize :initialize_i18n_hashes
 
-
         # dynamically define the accessors for the translated attributes:
 
         translated_attribute_names.each do |attr_name|
@@ -41,7 +48,7 @@ module EmbeddedLocalization
             # define the getter method
             define_method(attr_name) do |locale = I18n.locale|
               if ! self.i18n.has_key?(locale)
-                return self.i18n[ I18n.default_locale ][attr_name] if ActsAsI18n.fallback?
+                return self.i18n[ I18n.default_locale ][attr_name] if EmbeddedLocalization.fallbacks?
                 return nil
               end
               self.i18n[ locale ][attr_name]
@@ -49,6 +56,7 @@ module EmbeddedLocalization
 
           # define the setter method
             define_method(attr_name.to_s+ '=') do |new_translation|
+              self.i18n_will_change!
               self.i18n[I18n.locale] ||= HashWithIndifferentAccess.new
               self.i18n[I18n.locale][attr_name] = new_translation
             end

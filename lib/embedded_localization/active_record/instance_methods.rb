@@ -2,19 +2,22 @@ module EmbeddedLocalization
   module ActiveRecord
     module InstanceMethods
 
-      # maybe a better way to do this is to use a special class LocalizedAttribute < HashWithIndifferentAccess
-      # and use the [] , []= operators... hmm... thinking...
-
+      # we only support fallbacks to I18n.default_locale for now
+      #
       def get_localized_attribute(attr_name, locale)
-        if ! self.i18n.has_key?(locale)
-          return self.i18n[ I18n.default_locale ][attr_name] if ActsAsI18n.fallback?
-          return nil
-        else
+        if self.i18n.has_key?(locale)
           self.i18n[locale][attr_name]
+        else
+          if self.class.fallbacks? && self.i18n[ I18n.default_locale ]
+            return self.i18n[ I18n.default_locale ][attr_name] 
+          else
+            return nil
+          end
         end
       end
-        
+      
       def set_localized_attribute(attr_name, locale, new_translation)
+        self.i18n_will_change!     # for ActiveModel Dirty tracking
         self.i18n[locale] ||= HashWithIndifferentAccess.new
         self.i18n[locale][attr_name] = new_translation
       end

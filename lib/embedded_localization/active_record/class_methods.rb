@@ -16,11 +16,18 @@ module EmbeddedLocalization
         translated_attribute_names.include?(name.to_sym)
       end
 
-      # determine if we are using fallbacks
+      # # determine if we are using fallbacks
       def fallbacks?
-        Rails.application.config.i18n.fallbacks   # check if fallbacks are configured in the application.rb file
-        # translation_options[:fallbacks]   # not using Gem specific options anymore
+        i18n_fallbacks = I18n.backend.class.included_modules.map(&:to_s).include?('I18n::Backend::Fallbacks')   # will be true if config.i18n.fallbacks => true in config
+        i18n_fallbacks || translation_options[:fallbacks] == true
       end
+
+      #-
+      # # fetch the fallbacks from the i18n backend
+      # def fallbacks
+      #   fallbacks? ? I18n.fallbacks : nil
+      # end
+
     end
   end
 end

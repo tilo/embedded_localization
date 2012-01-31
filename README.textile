@@ -50,25 +50,6 @@ g.name  # => "공상 과학 소설"
 
 No extra tables needed for this!
 
-h3. Rails 3.0
-
-<pre><code>
-class CreateGenres < ActiveRecord::Migration
-  def self.up
-    create_table :genres do |t|
-      t.string :name
-      t.text   :description
-      t.timestamps
-    end
-  end
-  def self.down
-    drop_table :posts
-  end
-end
-</code></pre>
-
-Note that the ActiveRecord model @Genre@ must already exist and have a @translates@ directive listing the translated fields.
-
 h3. Rails 3.0 + Embedded_Localization version < 0.2.0
 
 <pre><code>
@@ -87,19 +68,23 @@ end
 
 Please note, if you use Embedded_Localization with version < 0.2.0, that you should not define the translated attributes in the migrations -- instead define one text attribute with the name :i18n -- this will change in version 0.2.0
 
+Note that the ActiveRecord model @Genre@ must already exist and have a @translates@ directive listing the translated fields.
+
+
 h2. I18n fallbacks for empty translations
 
-It is possible to enable fallbacks for empty translations. It will depend on the configuration setting you have set for I18n translations in your Rails config.
+It is possible to enable fallbacks for empty translations. It will depend on the configuration setting you have set for I18n translations in your Rails config, or you can enable fallback when you define the translation fields. Currently we only support fallback to @I18n.default_locale@
 
 You can enable them by adding the next line to @config/application.rb@ (or only @config/environments/production.rb@ if you only want them in production)
 
-<pre><code>config.i18n.fallbacks = true</code></pre>
+<pre><code>config.i18n.fallbacks = true # falls back to I18n.default_locale
+</code></pre>
 
 By default, Embedded_Localization will only use fallbacks when the translation value for the item you've requested is @nil@.
 
 <pre><code>
 class Genre < ActiveRecord::Base
-  translates :name, :description
+  translates :name, :description # , :fallbacks => true
 end
 
 I18n.locale = :en
@@ -129,7 +114,7 @@ Each class which uses Embedded_Localization will have these additional methods d
 <ul>
   <li>Klass.translated_attributes
   <li>Klass.translated?
-  <li>Klass.fallback?
+  <li>Klass.fallbacks?
 </ul> 
 
 e.g.: 
@@ -137,7 +122,7 @@ e.g.:
 <pre><code>
    Genre.translated_attributes # => [:name,:description]
    Genre.translated?  # => true
-   Genre.fallback?  # => false
+   Genre.fallbacks?  # => false
 
 </code></pre>
 
@@ -188,10 +173,23 @@ e.g.:
 
 </code></pre>
 
+h2. Motivation
+
+A recent project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as globalization3 requires.  A second requirement was to allow SQL queries of the fields using the default locale.
+
+The advantage of EmbeddedLocalization is that it does not need extra tables, and therefore no joins or additional table lookups to get to the translated data.
+
+If your requirements are different, my approach might not work for you. In that case, I recommend to look at the alternative solutions listed below.
 
 h2. Changes
 
-This is the initial version.
+h3. 0.1.4 (2012-01-31)
+* fixed bug with dirty tracking of serialized i18n attribute
+* renamed #fallback? to #fallbacks?
+
+
+h3. 0.1.3 Initial Version (2012-01-27)
+
 
 h2. Alternative Solutions
 

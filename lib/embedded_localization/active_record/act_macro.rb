@@ -9,20 +9,23 @@ module EmbeddedLocalization
         # i18n-0.6.0/lib/i18n/locale/fallbacks.rb
 
         # options[:fallbacks] => true or false # not used at this time
-#        options = attr_names.extract_options!
+        options = attr_names.extract_options!
 
         class_attribute :translated_attribute_names, :translation_options
         self.translated_attribute_names = attr_names.map(&:to_sym).sort.uniq
-#        self.translation_options        = options
+        self.translation_options        = options
 
         include InstanceMethods
         extend  ClassMethods
 
+        #-
         # if ActiveRecord::Base is in the parent-chain of the class where we are included into:
         # ::Rails::Railtie.subclasses.map(&:to_s).include?("ActiveRecord::Railtie")
+        #+
 
         serialize :i18n   # we should also protect it from direct assignment by the user
         
+        #-
         # if Mongoid::Document is in the list of classes which extends the class we are included into:
         # ::Rails::Railtie.subclasses.map(&:to_s).include?("Rails::Mongoid::Railtie")
 
@@ -38,6 +41,7 @@ module EmbeddedLocalization
         #   - we can easily hide the internal hash by re-defining the attr-accessors for doing the I18n
         #   - we can better add the per-attribute versioning, which is planned
         #   - 
+        #+
 
         after_initialize :initialize_i18n_hashes
 
@@ -46,24 +50,31 @@ module EmbeddedLocalization
         translated_attribute_names.each do |attr_name|
           class_eval do 
             # define the getter method
+            #
             define_method(attr_name) do |locale = I18n.locale|
-              if ! self.i18n.has_key?(locale)
-                return self.i18n[ I18n.default_locale ][attr_name] if EmbeddedLocalization.fallbacks?
-                return nil
+              if self.i18n.has_key?(locale)
+                self.i18n[ locale ][attr_name]
+              else
+                # fallback to the I18n.default_locale if we do fallbacks:
+                if self.class.fallbacks? && self.i18n[ I18n.default_locale ]
+                  return self.i18n[ I18n.default_locale ][attr_name]
+                else
+                  return nil
+                end
               end
-              self.i18n[ locale ][attr_name]
             end
 
-          # define the setter method
+            # define the setter method
+            #
             define_method(attr_name.to_s+ '=') do |new_translation|
-              self.i18n_will_change!
+              self.i18n_will_change!     # for ActiveModel Dirty tracking
               self.i18n[I18n.locale] ||= HashWithIndifferentAccess.new
               self.i18n[I18n.locale][attr_name] = new_translation
             end
           end
         end
       end
-
+      
       def translates?
         included_modules.include?(InstanceMethods)
       end

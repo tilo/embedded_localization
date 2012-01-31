@@ -50,15 +50,28 @@ g.name  # => "공상 과학 소설"
 
 No extra tables needed for this!
 
-h3. Rails 3.0 + Embedded_Localization version < 0.2.0
+h3. Rails 3.0
 
 <pre><code>
 class CreateGenres < ActiveRecord::Migration
   def self.up
     create_table :genres do |t|
-      t.text   :i18n    # this will be deprecated in 0.2.0
+      t.text   :i18n    # stores the translated attributes; persisted as a HashWithIndifferentAccess
+
+# optional:
+#      t.string :name    # you CAN define :name as a real column in your DB (but you don't have to)
+#                        # If you define it, it will store the I18n.default_locale translation for SQL lookups
+#                        # You can do this for any of the translated attributes.
       t.timestamps
     end
+    # -- example for a data migration: ---
+    # Genre.record_timestamps = false
+    # Genre.all.each do |g|
+    #   g.name = g.name   # the right-hand-side fetches the translation from the i18n attribute hash
+    #   g.save            # saves the :name attribute without updating the updated_at timestamp
+    # end
+    # Genre.record_timestamps = true
+    # ------------------------------------
   end
   def self.down
     drop_table :posts
@@ -66,7 +79,16 @@ class CreateGenres < ActiveRecord::Migration
 end
 </code></pre>
 
-Please note, if you use Embedded_Localization with version < 0.2.0, that you should not define the translated attributes in the migrations -- instead define one text attribute with the name :i18n -- this will change in version 0.2.0
+h4. NOTE:
+
+EmbeddedLocalization implementations < 0.2.0 have the drawback that you can not do SQL queries on translated attributes.
+
+To eliminate this limitation, you can now define any translated attribute as a first-class database column in your migration. If you define a translated attribute as a column, EmbeddedLocalization will store the attribute value for I18n.default_locale in that column, so you can search for it. After defining the column, and running the migration, you need to populate the column initially. It will auto-update every time you write while you are using I18n.default_locale .
+e.g.:
+
+<pre><code>
+  g = Genre.where(:name => "science fiction")   # this only works if you define :name as a DB column, and populate it
+</pre></code>
 
 Note that the ActiveRecord model @Genre@ must already exist and have a @translates@ directive listing the translated fields.
 

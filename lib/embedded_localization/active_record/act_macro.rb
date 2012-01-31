@@ -68,6 +68,9 @@ module EmbeddedLocalization
             #
             define_method(attr_name.to_s+ '=') do |new_translation|
               self.i18n_will_change!     # for ActiveModel Dirty tracking
+              if self.attributes.has_key?(attr_name.to_s)  # if user has defined DB field with that name
+                write_attribute(attr_name , new_translation) if I18n.locale == I18n.default_locale
+              end
               self.i18n[I18n.locale] ||= HashWithIndifferentAccess.new
               self.i18n[I18n.locale][attr_name] = new_translation
             end

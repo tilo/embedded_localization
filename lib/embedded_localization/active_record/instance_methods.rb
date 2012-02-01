@@ -21,8 +21,8 @@ module EmbeddedLocalization
         if self.attributes.has_key?(attr_name.to_s)  # if user has defined DB field with that name
           write_attribute(attr_name , new_translation) if locale == I18n.default_locale
         end
-        self.i18n[locale] ||= HashWithIndifferentAccess.new
-        self.i18n[locale][attr_name] = new_translation
+        self.i18n[locale] ||= Hash.new
+        self.i18n[locale][attr_name.to_sym] = new_translation
       end
 
       # Returns all locales used for translation of all documents of this class.
@@ -96,10 +96,10 @@ module EmbeddedLocalization
       # initialized the serialized 'i18n' attribute with Hash of Hashes,
       #   containing all pre-defined translated attributes with nil value
       def initialize_i18n_hashes
-        self.i18n ||= HashWithIndifferentAccess.new
-        self.i18n[ I18n.locale ] ||= HashWithIndifferentAccess.new(Hash.zip(translated_attribute_names,[]))
+        self.i18n ||= Hash.new
+        self.i18n[ I18n.locale ] ||= Hash.new(Hash.zip(translated_attribute_names,[]))
         if I18n.locale != I18n.default_locale
-          self.i18n[ I18n.default_locale ] ||= HashWithIndifferentAccess.new(Hash.zip(translated_attribute_names,[]))
+          self.i18n[ I18n.default_locale ] ||= Hash.new(Hash.zip(translated_attribute_names,[]))
         end
       end
 

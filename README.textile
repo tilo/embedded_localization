@@ -56,7 +56,7 @@ h3. Rails 3.0
 class CreateGenres < ActiveRecord::Migration
   def self.up
     create_table :genres do |t|
-      t.text   :i18n    # stores the translated attributes; persisted as a HashWithIndifferentAccess
+      t.text   :i18n    # stores the translated attributes; persisted as a Hash
 
 # optional:
 #      t.string :name    # you CAN define :name as a real column in your DB (but you don't have to)

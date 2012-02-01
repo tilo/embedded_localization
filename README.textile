@@ -205,6 +205,9 @@ If your requirements are different, my approach might not work for you. In that 
 
 h2. Changes
 
+h3. 0.2.1 (2012-01-31)
+* bugfix for serialized i18n attribute
+
 h3. 0.2.0 (2012-01-31)
 * added support for having DB columns for translated attributes, to enable SQL queries in I18n.default_locale
 

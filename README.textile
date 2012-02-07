@@ -205,6 +205,9 @@ If your requirements are different, my approach might not work for you. In that 
 
 h2. Changes
 
+h3. 0.2.2 (2012-02-06)
+* bugfix for attr_writer
+
 h3. 0.2.1 (2012-01-31)
 * bugfix for serialized i18n attribute
 

@@ -81,7 +81,7 @@ end
 
 h4. NOTE:
 
-EmbeddedLocalization implementations < 0.2.0 have the drawback that you can not do SQL queries on translated attributes.
+EmbeddedLocalization implementations < 0.2.0 had the drawback that you can not do SQL queries on translated attributes.
 
 To eliminate this limitation, you can now define any translated attribute as a first-class database column in your migration. If you define a translated attribute as a column, EmbeddedLocalization will store the attribute value for I18n.default_locale in that column, so you can search for it. After defining the column, and running the migration, you need to populate the column initially. It will auto-update every time you write while you are using I18n.default_locale .
 e.g.:

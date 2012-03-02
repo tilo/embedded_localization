@@ -2,9 +2,12 @@ module EmbeddedLocalization
   module ActiveRecord
     module InstanceMethods
 
-      # we only support fallbacks to I18n.default_locale for now
-      #
+      # - we only support fallbacks to I18n.default_locale for now
+      # - will convert given locale to symbol, e.g. "en","En" to :en
+
       def get_localized_attribute(attr_name, locale)
+        locale = locale.downcase.to_sym  if locale.class == String # ensure that locale is always a symbol
+
         if self.i18n.has_key?(locale)
           self.i18n[locale][attr_name]
         else
@@ -16,7 +19,11 @@ module EmbeddedLocalization
         end
       end
       
+      # - will convert given locale to symbol, e.g. "en","En" to :en
+
       def set_localized_attribute(attr_name, locale, new_translation)
+        locale = locale.downcase.to_sym  if locale.class == String # ensure that locale is always a symbol
+
         # first check if nothing changed - then we can just return, so that timestamps and other records don't get touched
         if self.i18n.class == Hash && (self.i18n[I18n.locale]) && (self.i18n[I18n.locale][attr_name.to_sym] == new_translation)
           return if (I18n.locale != I18n.default_locale)

@@ -205,6 +205,9 @@ If your requirements are different, my approach might not work for you. In that 
 
 h2. Changes
 
+h3. 0.2.3 (2012-03-02)
+* bugfix for attr_writer - no longer updates attributes if value didn't change => timestamps don't change in that case
+
 h3. 0.2.2 (2012-02-06)
 * bugfix for attr_writer
 

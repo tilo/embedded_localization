@@ -17,6 +17,12 @@ module EmbeddedLocalization
       end
       
       def set_localized_attribute(attr_name, locale, new_translation)
+        # first check if nothing changed - then we can just return, so that timestamps and other records don't get touched
+        if self.i18n.class == Hash && (self.i18n[I18n.locale]) && (self.i18n[I18n.locale][attr_name.to_sym] == new_translation)
+          return if (I18n.locale != I18n.default_locale)
+          return if (I18n.locale == I18n.default_locale) && (read_attribute(attr_name) == new_translation) # both i18n and attr_name need to be equal to new_translation
+        end
+
         self.i18n_will_change!     # for ActiveModel Dirty tracking
         if self.attributes.has_key?(attr_name.to_s)  # if user has defined DB field with that name
           write_attribute(attr_name , new_translation) if locale == I18n.default_locale

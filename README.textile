@@ -12,6 +12,8 @@ h2. Requirements
 ActiveRecord > 3.0.0.rc
 I18n
 
+Tested with Rails 3.2.2
+
 h2. Installation
 
 To install Embedded_Localization, use:
@@ -50,7 +52,7 @@ g.name  # => "공상 과학 소설"
 
 No extra tables needed for this!
 
-h3. Rails 3.0
+h3. Rails 3.x
 
 <pre><code>
 class CreateGenres < ActiveRecord::Migration

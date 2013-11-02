@@ -207,6 +207,9 @@ If your requirements are different, my approach might not work for you. In that 
 
 h2. Changes
 
+h3. 0.2.5 (2013-11-02)
+* adding MIT and GPL-2 licenses to gem-spec file; contact me if you need another license
+
 h3. 0.2.4 (2012-03-02)
 * Issue #5 : bugfix for attr_writer
 

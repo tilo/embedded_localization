@@ -106,6 +106,10 @@ describe 'model has translated field without attribute of that same name' do
         genre.reload
       end
 
+      it 'correctly reports the translated_locales' do
+        genre.translated_locales.should eq [:en]
+      end
+
        # when setting all fields in the default locale's languange:
       it 'correctly reports translation_missing for updated record' do
         genre.translation_missing.should eq Hash.new
@@ -139,6 +143,10 @@ describe 'model has translated field without attribute of that same name' do
         I18n.locale = I18n.default_locale   # MAKE SURE you switch back to your default locale if you tweak it
         genre.save
         genre.reload
+      end
+
+      it 'correctly reports the translated_locales' do
+        genre.translated_locales.should eq [:en, :jp, :ko, :de]
       end
 
       it 'can assign the translated field' do

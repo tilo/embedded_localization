@@ -109,6 +109,10 @@ describe 'model has translated field with attribute of that same name' do
         movie.reload
       end
 
+      it 'correctly reports the translated_locales' do
+        movie.translated_locales.should eq [:en]
+      end
+
       # when setting all fields in the default locale's languange:
       it 'correctly reports translation_missing for updated record' do
         movie.translation_missing.should eq Hash.new
@@ -141,6 +145,10 @@ describe 'model has translated field with attribute of that same name' do
         I18n.locale = I18n.default_locale   # MAKE SURE you switch back to your default loale if you tweak it
         movie.save
         movie.reload
+      end
+
+      it 'correctly reports the translated_locales' do
+        movie.translated_locales.should eq [:en, :ru, :tr, :de]
       end
 
       it 'can assign the translated field' do

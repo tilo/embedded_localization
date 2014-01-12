@@ -8,6 +8,9 @@
 
 Model translations with `embedded_localization` use default ActiveRecord features and do not limit any ActiveRecord functionality.
 
+On top of that, you also get tools for checking into which locales an attribute was translated to, as well as for checking overall translation coverage.
+
+
 ## Requirements
 
 * ActiveRecord > 3.0.0.rc   # Tested with Rails 4.0.2, 3.2.18, 3.2.2

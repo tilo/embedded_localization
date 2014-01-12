@@ -108,10 +108,13 @@ By manipulating the `I18n.locale`. This is what happens if you have user's with 
 	  g.name  # => 'science fiction'
 	  
 	  I18n.locale = :jp
+	  g.name = "サイエンスフィクション"
 	  g.name  # => "サイエンスフィクション"
 	  
 	  I18n.locale = :ko
+	  g.name = "공상 과학 소설"
 	  g.name  # => "공상 과학 소설"
+	  
 	 
 ## SQL Queries against Translated Fields
 

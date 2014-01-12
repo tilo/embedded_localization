@@ -87,15 +87,15 @@ you are using your own locale.
 	  	  
 	  # even though you are using the :en locale, you can still set the values for other locales:
 	  
-	  g.set_translated_attribute( :name, :jp, "サイエンスフィクション" )
-	  g.set_translated_attribute( :name, :ko, "공상 과학 소설" )
+	  g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
+	  g.set_localized_attribute( :name, :ko, "공상 과학 소설" )
 	  
 	  g.name       # => 'science fiction'
 	  g.name(:jp)  # => "サイエンスフィクション"
 	  g.name(:ko)  # => "공상 과학 소설"
 	  
-	  g.get_translated_attribute( :name, :jp )  # => "サイエンスフィクション"
-	  g.get_translated_attribute( :name, :ko )  # => "공상 과학 소설"
+	  g.get_localized_attribute( :name, :jp )  # => "サイエンスフィクション"
+	  g.get_localized_attribute( :name, :ko )  # => "공상 과학 소설"
 	 
 ## Tweaking `I18n.locale`
 
@@ -129,7 +129,7 @@ See also Example 2 above.
 	  g = Genre.first
 	  g.name = 'science fiction'   # in Example 2 this will be stored in the DB column :name as well
 	  ...
-	  g.set_translated_attribute( :name, :jp, "サイエンスフィクション" )
+	  g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
 	  ...
 	  scifi = Genre.where(:name => "science fiction").first
 
@@ -208,6 +208,19 @@ Each model instance of a class which uses `embedded_localization` will have thes
   * hash of translation coverage for a given record's attributes or a particular attribute
   * hash of missing translations for a given record's attributes or a particular attribute
   * directly setting and getting attribute values for a given locale; without having to change `I18n.locale`
+  
+e.g.:
+
+	g = Genre.where(:name => "science fiction").first
+	
+	# check if an attribute is translated:
+	g.translated?(:name) # => true
+	
+	# check for which locales we have values: (spanning all translated fields)
+	g.translated_locales  # => [:en]
+
+	
+	
 
 #### translated_locales vs translation_coverage
 

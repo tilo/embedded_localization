@@ -109,11 +109,15 @@ By manipulating the `I18n.locale`. This is what happens if you have user's with 
 	  
 	  I18n.locale = :jp
 	  g.name = "サイエンスフィクション"
-	  g.name  # => "サイエンスフィクション"
 	  
 	  I18n.locale = :ko
 	  g.name = "공상 과학 소설"
 	  g.name  # => "공상 과학 소설"
+	  
+	  I18n.locale = :jp
+	  g.name  # => "サイエンスフィクション"
+	  	  
+	  I18n.locale = :en  # MAKE SURE to switch back to your default locale if you tweak it
 	  
 	 
 ## SQL Queries against Translated Fields
@@ -306,6 +310,10 @@ The advantage of EmbeddedLocalization is that it does not need extra tables, and
 If your requirements are different, my approach might not work for you. In that case, I recommend to look at the alternative solutions listed below.
 
 ## Changes
+
+### 1.1.0 (2014-01-12)
+* adding more rspec tests.
+* improving documentation and README
 
 ### 1.0.0 (2014-01-11)
 * adding rspec tests.

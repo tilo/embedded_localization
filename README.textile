@@ -2,6 +2,8 @@ h1. Embedded Localization
 
 Embedded_Localization is a Rails 3 localization gem, targeted at ActiveRecord 3. It is compatible with and builds on the new "I18n API in Ruby on Rails":http://guides.rubyonrails.org/i18n.html and adds model translations to ActiveRecord.
 
+An update for Rails 4 is in the making.
+
 Embedded_Localization is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!  Make sure that your database default encoding is UTF-8 or UFT-16.
 
 Model translations with Embedded_Localization use default ActiveRecord features and do not limit any ActiveRecord functionality.

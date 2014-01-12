@@ -52,7 +52,7 @@ g.name  # => "공상 과학 소설"
 
 No extra tables needed for this!
 
-h3. Rails 3.x
+h3. Rails 3.x and 4.x
 
 <pre><code>
 class CreateGenres < ActiveRecord::Migration

@@ -12,7 +12,7 @@ h2. Requirements
 ActiveRecord > 3.0.0.rc
 I18n
 
-Tested with Rails 3.2.2
+Tested with Rails 3.2.2 , 3.2.16
 
 h2. Installation
 
@@ -139,9 +139,9 @@ Each class which uses Embedded_Localization will have these additional methods d
   <li>Klass.translated_attributes
   <li>Klass.translated?
   <li>Klass.fallbacks?
-</ul> 
+</ul>
 
-e.g.: 
+e.g.:
 
 <pre><code>
    Genre.translated_attributes # => [:name,:description]
@@ -162,7 +162,19 @@ Each model instance of a class which uses Embedded_Localization will have these 
   <li>directly setting and getting attribute values for a given locale; without having to change <code>I18n.locale</code>
 </ul>
 
-e.g.:    
+Notes:
+
+<pre><code>translated_locales</code></pre> lists the super-set of all locales, including the default locale, even if there is no value set for a specific attribute.
+For a new empty record, this will report I18n.default_locale.
+
+translated_locales reports which translations / languages are possible.
+
+<pre><code>translation_coverage</code></pre> only lists locales for which a non-nil value is set.
+For a new empty record, this will be empty.
+
+translation_coverage reports for which languages translations exist (actual values exist).
+
+e.g.:
 
 <pre><code>
    I18n.locale = :jp
@@ -177,8 +189,8 @@ e.g.:
    g.translated_attributes # => [:name,:description]
    g.translated?  # => true
 
-   g.translation_coverage 
-   # => {"name"=>["en", "ko", "jp"] , "description"=>["en", "de", "fr", "ko", "jp", "es"]} 
+   g.translation_coverage
+   # => {"name"=>["en", "ko", "jp"] , "description"=>["en", "de", "fr", "ko", "jp", "es"]}
 
    g.translation_coverage(:name)
    # => {"name"=>["en", "ko", "jp"]}
@@ -207,6 +219,13 @@ If your requirements are different, my approach might not work for you. In that 
 
 h2. Changes
 
+
+h3. 1.0.0 (2014-01-11)
+* adding rspec tests.
+* fixing issue #6: translated fields for new records were not nil
+* fixing issue #7: translation_missing for new records is breaking
+
+
 h3. 0.2.5 (2013-11-02)
 * adding MIT and GPL-2 licenses to gem-spec file; contact me if you need another license
 
@@ -214,7 +233,7 @@ h3. 0.2.4 (2012-03-02)
 * Issue #5 : bugfix for attr_writer
 
 h3. 0.2.3 (2012-03-02)
-* Issue #4 : bugfix for attr_writer - no longer updates attributes if value didn't change => timestamps don't change in that case 
+* Issue #4 : bugfix for attr_writer - no longer updates attributes if value didn't change => timestamps don't change in that case
 
 h3. 0.2.2 (2012-02-06)
 * bugfix for attr_writer

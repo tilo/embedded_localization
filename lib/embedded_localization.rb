@@ -17,11 +17,11 @@ ActiveRecord::Base.extend(EmbeddedLocalization::ActiveRecord::ActMacro)
 # Fallbacks:  https://github.com/svenfuchs/i18n/wiki/Fallbacks
 #
 # The problem is that the I18n backends are meant for static strings in the views, helpers, etc.; not for model data.
-# Switching on the current I18n backend's fallbacks will allow us to use that backend's mappings from one locale to the fallbacks, 
+# Switching on the current I18n backend's fallbacks will allow us to use that backend's mappings from one locale to the fallbacks,
 # but we still need to search for the translated module data in our serialized i18n attribute hash ourselves.
 
 # to enable I18n fallbacks:
-# require "i18n/backend/fallbacks" 
+# require "i18n/backend/fallbacks"
 # I18n.backend.class.send(:include, I18n::Backend::Fallbacks)
 
 # Thread.current[:i18n_config].backend

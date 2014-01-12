@@ -9,16 +9,20 @@ module EmbeddedLocalization
         locale = locale.downcase.to_sym  if locale.class == String # ensure that locale is always a symbol
 
         if self.i18n.has_key?(locale)
-          self.i18n[locale][attr_name]
+          if self.i18n[locale].keys.include?(attr_name)
+            self.i18n[locale][attr_name]
+          else
+            nil
+          end
         else
           if self.class.fallbacks? && self.i18n[ I18n.default_locale ]
-            return self.i18n[ I18n.default_locale ][attr_name] 
+            return self.i18n[ I18n.default_locale ][attr_name]
           else
             return nil
           end
         end
       end
-      
+
       # - will convert given locale to symbol, e.g. "en","En" to :en
 
       def set_localized_attribute(attr_name, locale, new_translation)
@@ -44,15 +48,15 @@ module EmbeddedLocalization
       def translated_locales
         self.i18n.keys
       end
-      
-      # Returns Array of Symbols for all attributes of this class, 
+
+      # Returns Array of Symbols for all attributes of this class,
       #   which have translations through acts_as_i18n.
       # returns an Array of Symbols
       #
       def translated_attributes
         self.class.translated_attributes
       end
-        
+
       # Checks whether field with given name is translated field.
       # Param String or Symbol
       # Returns true or false
@@ -75,8 +79,12 @@ module EmbeddedLocalization
         end
         if attribute.nil?
           return attrs
-        else
-          return attrs[attribute.to_sym]
+        elsif attrs[attribute.to_sym]
+          attrs[attribute.to_sym]
+        elsif translated?(attribute)
+          []
+        else   # if it's not a translated attribute, return nil
+          nil
         end
       end
 
@@ -85,7 +93,7 @@ module EmbeddedLocalization
       # If an attribute has complete translation coverage, it will not be listed
       # If the result is an empty Hash, then no attributes are missing translations
       #
-      # Needs all the desired locales to be present in 'translated_locales' 
+      # Needs all the desired locales to be present in 'translated_locales'
       # e.g. each locale must be present in at least one of the translated attributes
       #
       def translation_missing( attribute = nil )

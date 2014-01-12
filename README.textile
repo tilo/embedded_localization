@@ -1,4 +1,4 @@
-h1. Embedded Localization [![Build Status](https://secure.travis-ci.org/tilo/embedded_localization.png?branch=master)](http://travis-ci.org/tilo/embedded_localization)
+h1. Embedded Localization <a href="http://travis-ci-org/tilo/embedded_localization"><img src="https://secure.travis-ci.org/tilo/embedded_localization.png?branch=master" alt="Build Status"></a>
 
 
 

@@ -90,7 +90,9 @@ you are using your own locale.
 	  g.set_translated_attribute( :name, :jp, "サイエンスフィクション" )
 	  g.set_translated_attribute( :name, :ko, "공상 과학 소설" )
 	  
-	  g.name  # => 'science fiction'
+	  g.name       # => 'science fiction'
+	  g.name(:jp)  # => "サイエンスフィクション"
+	  g.name(:ko)  # => "공상 과학 소설"
 	  
 	  g.get_translated_attribute( :name, :jp )  # => "サイエンスフィクション"
 	  g.get_translated_attribute( :name, :ko )  # => "공상 과학 소설"
@@ -111,9 +113,9 @@ By manipulating the `I18n.locale`. This is what happens if you have user's with 
 	  I18n.locale = :ko
 	  g.name  # => "공상 과학 소설"
 	 
-## Using SQL Queries against Translated Fields
+## SQL Queries against Translated Fields
 
-`embedded_localization` implementations < 0.2.0 had the drawback that you can not do SQL queries on translated attributes.
+Old `embedded_localization` implementations < 0.2.0 had the drawback that you can not do SQL queries on translated attributes.
 
 To eliminate this limitation, you can now define any translated attribute as a first-class database column in your migration. 
 
@@ -179,7 +181,7 @@ By default, `embedded_localization` will only use fallbacks when the translation
 
 ## Want some Candy?
 
-It's nice to have the values of attributes be set or read with the current locale, but `embedded_localization` offers you a couple of additional features..
+It's nice to have the values of attributes be set or read with the current locale, but `embedded_localization` offers you a couple of additional features, which can come in handy.
 
 ### Class Methods
 
@@ -200,7 +202,7 @@ e.g.:
 
 Each model instance of a class which uses `embedded_localization` will have these additional features:
 
-  * on-the-fly translations, via <code>.name(:locale)</code>
+  * on-the-fly translations, via `g.name(:locale)`
   * list of translated locales
   * list of translated attributes
   * hash of translation coverage for a given record's attributes or a particular attribute

@@ -216,10 +216,34 @@ e.g.:
 	# check if an attribute is translated:
 	g.translated?(:name) # => true
 	
+	# which attributes are translated?
+	g.translated_attributes   # => [:description, :name]
+	
 	# check for which locales we have values: (spanning all translated fields)
 	g.translated_locales  # => [:en]
 
+	g.set_localized_attribute(:description, :de, "Ich liebe Science Fiction Filme")
+
+    # check again for which locales we have values: (spanning all translated fields)
+    g.translated_locales  # => [:en, :de]
+
+	# show details for which locales the attributes have values for:
+    #   for all attributes:
+	g.translation_coverage  # => {:name=>[:en], :description=>[:de]}
 	
+	#   for a specific attribute:	
+	g.translation_coverage(:name) # => [:en]
+	g.translation_coverage(:description)  # => [:de]
+
+	# show where translations are missing:
+    #   for all attributes:	
+	g.translation_missing   # => {:description=>[:en], :name=>[:de]}
+
+	#   for a specific attribute:
+	g.translation_missing(:name)  # => [:de]
+	g.translation_missing(:description)  # => [:en]
+
+
 	
 
 #### translated_locales vs translation_coverage

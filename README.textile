@@ -1,4 +1,6 @@
-h1. Embedded Localization
+h1. Embedded Localization [![Build Status](https://secure.travis-ci.org/tilo/embedded_localization.png?branch=master)](http://travis-ci.org/tilo/embedded_localization)
+
+
 
 Embedded_Localization is a Rails 3 and Rails 4 localization gem, targeted at ActiveRecord 3 and 4. It is compatible with and builds on the new "I18n API in Ruby on Rails":http://guides.rubyonrails.org/i18n.html and adds model translations to ActiveRecord.
 

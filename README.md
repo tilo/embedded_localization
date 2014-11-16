@@ -1,6 +1,6 @@
 # Embedded Localization
 
-[![Build Status](https://secure.travis-ci.org/tilo/embedded_localization.png?branch=master)](http://travis-ci.org/tilo/embedded_locallization)
+[![Build Status](https://secure.travis-ci.org/tilo/embedded_localization.png?branch=master)](http://travis-ci.org/tilo/embedded_locallization) [![Gem Version](https://badge.fury.io/rb/embedded_localization.svg)](http://badge.fury.io/rb/embedded_localization)
 
 `embedded_loalization` is compatible with Rails 3 and Rails 4, and adds model translations to ActiveRecord.  `embedded_localization` is compatible with and builds on the new [I18n API in Ruby on Rails](http://guides.rubyonrails.org/i18n.html) 
 

@@ -15,7 +15,7 @@ On top of that, you also get tools for checking into which locales an attribute 
 
 One real-life scenario is that you have a SaaS system which needs custom text for each company, which also needs to be translated in to several languages. Another scenario is that you have dynamic content that needs to be translated.
 
-A project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as globalization3 requires.  A second requirement was to allow SQL queries of the fields using the default locale.
+A recent project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as globalization3 requires.  A second requirement was to allow SQL queries of the fields using the default locale.
 
 The advantage of EmbeddedLocalization is that it does not need extra tables, and therefore no joins or additional table lookups to get to the translated data.
 

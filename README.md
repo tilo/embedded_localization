@@ -13,8 +13,8 @@ On top of that, you also get tools for checking into which locales an attribute 
 
 ## Requirements
 
-* ActiveRecord > 3.0.0.rc   # Tested with Rails 5.1, 5,0, 4.2, 4.0.2, 3.2.18, 3.2.2
-* I18n
+* ActiveRecord >= 3   # Tested with Rails 5.1, 5,0, 4.2, 4.0.2, 3.2.18, 3.2.2
+* [I18n](http://guides.rubyonrails.org/i18n.html)
 
 ## Installation
 

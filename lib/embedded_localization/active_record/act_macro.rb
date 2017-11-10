@@ -5,8 +5,8 @@ module EmbeddedLocalization
         return if translates?  # cludge to make sure we don't set this up twice..
 
         # for details about I18n fallbacks, check the source:
-        # i18n-0.6.0/lib/i18n/backend/fallbacks.rb
-        # i18n-0.6.0/lib/i18n/locale/fallbacks.rb
+        # i18n-0.9.0/lib/i18n/backend/fallbacks.rb
+        # i18n-0.9.0/lib/i18n/locale/fallbacks.rb
 
         # options[:fallbacks] => true or false # not used at this time
         options = attr_names.extract_options!

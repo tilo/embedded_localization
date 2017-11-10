@@ -13,8 +13,17 @@ load File.dirname(__FILE__) + '/schema.rb'
 require File.dirname(__FILE__) + '/models.rb'
 
 
+I18n.enforce_available_locales = false
+I18n.config.available_locales = [:ru,:jp,:ko,:fr,:en,:de]
+
 RSpec.configure do |config|
-  config.treat_symbols_as_metadata_keys_with_true_values = true
-  config.filter_run :focus => true
+  config.expect_with :rspec do |expectations|
+    expectations.syntax = :should
+  end
+  config.mock_with :rspec do |mocks|
+    mocks.syntax = :should
+  end
+
+  config.filter_run_including :focus => true
   config.run_all_when_everything_filtered = true
 end

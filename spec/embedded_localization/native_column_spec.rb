@@ -9,11 +9,10 @@ I18n.locale = :en
 describe 'model has translated field with attribute of that same name' do
   let(:movie){ Movie.new }
 
-
   describe "basic things that need to work" do
 
     it 'reports it translates' do
-      Movie.translates?.should be_true
+      Movie.translates?.should be_truthy
     end
 
     it 'correctly reports the list of translated_attributes' do
@@ -25,12 +24,12 @@ describe 'model has translated field with attribute of that same name' do
     end
 
     it 'correcty shows the translated attribute as translated' do
-      Movie.translated?(:title).should be_true
-      Movie.translated?(:description).should be_true
+      Movie.translated?(:title).should be_truthy
+      Movie.translated?(:description).should be_truthy
     end
 
     it 'correcty shows not translated attribute' do
-      Movie.translated?(:other).should be_false
+      Movie.translated?(:other).should be_falsy
     end
   end
 
@@ -41,7 +40,7 @@ describe 'model has translated field with attribute of that same name' do
     end
 
     it 'correctly reports translation_missing for new record' do
-      movie.translation_missing.should be_true
+      movie.translation_missing.should be_truthy
     end
 
     it 'creates the accessor methods' do
@@ -153,7 +152,7 @@ describe 'model has translated field with attribute of that same name' do
 
       it 'can assign the translated field' do
         movie.title = title_en
-        movie.save.should be_true
+        movie.save.should be_truthy
         movie.title.should eq  title_en
         movie.title(:en).should eq  title_en
       end

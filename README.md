@@ -13,7 +13,7 @@ On top of that, you also get tools for checking into which locales an attribute 
 
 ## Requirements
 
-* ActiveRecord > 3.0.0.rc   # Tested with Rails 4.2, 4.0.2, 3.2.18, 3.2.2
+* ActiveRecord > 3.0.0.rc   # Tested with Rails 5.1, 5,0, 4.2, 4.0.2, 3.2.18, 3.2.2
 * I18n
 
 ## Installation
@@ -310,6 +310,14 @@ The advantage of EmbeddedLocalization is that it does not need extra tables, and
 If your requirements are different, my approach might not work for you. In that case, I recommend to look at the alternative solutions listed below.
 
 ## Changes
+
+### 1.2.0 (2017-11-10)
+* Rails 5 compatibility
+* fixing tests
+* updating doc
+
+### 1.1.1 (2014-11-02)
+* minor update
 
 ### 1.1.0 (2014-01-12)
 * adding more rspec tests.

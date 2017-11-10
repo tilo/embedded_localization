@@ -13,7 +13,7 @@ describe 'model has translated field without attribute of that same name' do
   describe "basic things that need to work" do
 
     it 'reports it translates' do
-      Genre.translates?.should be_true
+      Genre.translates?.should be_truthy
     end
 
     it 'correctly reports the list of translated_attributes' do
@@ -25,12 +25,12 @@ describe 'model has translated field without attribute of that same name' do
     end
 
     it 'correcty shows the translated attribute as translated' do
-      Genre.translated?(:name).should be_true
-      Genre.translated?(:description).should be_true
+      Genre.translated?(:name).should be_truthy
+      Genre.translated?(:description).should be_truthy
     end
 
     it 'correcty shows not translated attribute' do
-      Genre.translated?(:other).should be_false
+      Genre.translated?(:other).should be_falsy
     end
   end
 
@@ -41,7 +41,7 @@ describe 'model has translated field without attribute of that same name' do
     end
 
     it 'correctly reports translation_missing for new record' do
-      genre.translation_missing.should be_true
+      genre.translation_missing.should be_truthy
     end
 
     it 'creates the accessor methods' do
@@ -151,7 +151,7 @@ describe 'model has translated field without attribute of that same name' do
 
       it 'can assign the translated field' do
         genre.name = genre_name_en
-        genre.save.should be_true
+        genre.save.should be_truthy
         genre.name.should eq  genre_name_en
         genre.name(:en).should eq genre_name_en
       end

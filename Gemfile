@@ -6,8 +6,8 @@ gemspec
 gem 'rake'
 
 group :test do
-  gem 'rspec', "~> 2.14"
-  gem 'activerecord', "~> 4.0.0"
+  gem 'rspec', "~> 3"
+  gem 'activerecord', "~> 5.1"
   gem 'i18n'
   gem 'sqlite3'
 end

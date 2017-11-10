@@ -15,7 +15,7 @@ On top of that, you also get tools for checking into which locales an attribute 
 
 One real-life scenario is that you have a SaaS system which needs custom text for each company, which also needs to be translated in to several languages. Another scenario is that you have dynamic content that needs to be translated.
 
-A recent project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as globalization3 requires.  A second requirement was to allow SQL queries of the fields using the default locale.
+A recent project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as the globalize gem requires.  A second requirement was to allow SQL queries of the fields using the default locale.
 
 The advantage of EmbeddedLocalization is that it does not need extra tables, and therefore no joins or additional table lookups to get to the translated data.
 
@@ -361,7 +361,7 @@ For a new empty record, this will be empty.
 ## Alternative Solutions
 
 * [Mongoid](https://github.com/mongoid/mongoid) - awesome Ruby ORM for MongoDB, which includes in-table localization of attributes (mongoid >= 2.3.0)
-* [Globalize3](https://github.com/svenfuchs/globalize3) - is an awesome gem, but different approach with more tables in the schema.
+* [Globalize](https://github.com/globalize/globalize) - is an awesome gem, but different approach with more tables in the schema.
 * [Veger's fork of Globalize2](http://github.com/veger/globalize2) - uses default AR schema for the default locale, delegates to the translations table for other locales only
 * [TranslatableColumns](http://github.com/iain/translatable_columns) - have multiple languages of the same attribute in a model (Iain Hecker)
 * [localized_record](http://github.com/glennpow/localized_record) - allows records to have localized attributes without any modifications to the database (Glenn Powell)

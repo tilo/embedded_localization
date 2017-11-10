@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Tilo Sloboda"]
   s.email       = ["tilo.sloboda@gmail.com"]
   s.homepage    = "https://github.com/tilo/embedded_localization"
-  s.summary     = %q{Rails I18n: library for embedded ActiveRecord 3 model/data translation}
-  s.description = %q{Rails I18n: Embedded_Localization for ActiveRecord 3 is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!}
+  s.summary     = %q{Rails I18n: library for embedded ActiveRecord model/data translation}
+  s.description = %q{Rails I18n: Embedded_Localization for ActiveRecord is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!}
 
 #  s.rubyforge_project = "embedded_localization"
   s.rubyforge_project = "[none]"
@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.licenses = ['MIT','GPL-2']
   # specify any dependencies here; for example:
   s.add_development_dependency "rspec"
-  s.add_development_dependency "activerecord", "~> 4.0.0"
+  s.add_development_dependency "activerecord", "~> 5.1"
   s.add_development_dependency "i18n"
   s.add_development_dependency "sqlite3"
   # s.add_runtime_dependency "rest-client"

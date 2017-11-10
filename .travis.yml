@@ -6,7 +6,8 @@ rvm:
   - 2.4.2
   - ruby-head
   - jruby-head
-  - rbx
+  - mruby
+  - rubinius
   - ree
 env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
 matrix:
@@ -14,8 +15,9 @@ matrix:
     - rvm: ruby-head
     - rvm: jruby-head
     - rvm: ree
-    - rvm: rbx
+    - rvm: rubinius
     - rvm: jruby-19mode
+    - rvm: mruby
 branches:
   only:
     - master

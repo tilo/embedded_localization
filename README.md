@@ -11,6 +11,17 @@ Model translations with `embedded_localization` use default ActiveRecord feature
 On top of that, you also get tools for checking into which locales an attribute was translated to, as well as for checking overall translation coverage.
 
 
+## Motivation
+
+One real-life scenario is that you have a SaaS system which needs custom text for each company, which also needs to be translated in to several languages. Another scenario is that you have dynamic content that needs to be translated.
+
+A project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as globalization3 requires.  A second requirement was to allow SQL queries of the fields using the default locale.
+
+The advantage of EmbeddedLocalization is that it does not need extra tables, and therefore no joins or additional table lookups to get to the translated data.
+
+If your requirements are different, this approach might not work for you. In that case, I recommend to look at the alternative solutions listed at the bottom of this page.
+
+
 ## Requirements
 
 * ActiveRecord >= 3   # Tested with Rails 5.1, 5,0, 4.2, 4.0.2, 3.2.18, 3.2.2
@@ -300,14 +311,6 @@ For a new empty record, this will be empty.
 
 	   g.set_localized_attribute(:name, :de, "Science-Fiction")
 	   # => "Science-Fiction"
-
-## Motivation
-
-A recent project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as globalization3 requires.  A second requirement was to allow SQL queries of the fields using the default locale.
-
-The advantage of EmbeddedLocalization is that it does not need extra tables, and therefore no joins or additional table lookups to get to the translated data.
-
-If your requirements are different, my approach might not work for you. In that case, I recommend to look at the alternative solutions listed below.
 
 ## Changes
 

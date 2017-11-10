@@ -1,7 +1,6 @@
 language: ruby
 bundler_args: --without development
 rvm:
-  - 2.1.10
   - 2.2.8
   - 2.3.5
   - 2.4.2
@@ -12,10 +11,10 @@ rvm:
 env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
 matrix:
   allow_failures:
-    - rbx
     - rvm: ruby-head
     - rvm: jruby-head
     - rvm: ree
+    - rvm: rbx
     - rvm: jruby-19mode
 branches:
   only:

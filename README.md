@@ -24,7 +24,7 @@ If your requirements are different, this approach might not work for you. In tha
 
 ## Requirements
 
-* ActiveRecord >= 3   # Tested with Rails 5.1, 5,0, 4.2, 4.0.2, 3.2.18, 3.2.2
+* ActiveRecord >= 3  
 * [I18n](http://guides.rubyonrails.org/i18n.html)
 
 ## Installation

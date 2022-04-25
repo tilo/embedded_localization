@@ -11,9 +11,6 @@ Gem::Specification.new do |s|
   s.summary     = %q{Rails I18n: library for embedded ActiveRecord model/data translation}
   s.description = %q{Rails I18n: Embedded_Localization for ActiveRecord is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!}
 
-#  s.rubyforge_project = "embedded_localization"
-  s.rubyforge_project = "[none]"
-
   # s.platform = Gem::Platform::RUBY
 
   s.files         = `git ls-files`.split("\n")

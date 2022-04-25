@@ -46,21 +46,25 @@ Model translations allow you to translate your models’ attribute values. The a
 
 Let's assume you have a table for movie genres, and you want to translate the names and the descriptions of the genres.   Simply define your `Genre` model as follows:
 
-	  class Genre < ActiveRecord::Base
-		translates :name, :description
-	  end
+```ruby
+class Genre < ActiveRecord::Base
+  translates :name, :description
+end
+```
 
 In the DB migration, you just need to add the `i18n` text field:
 
-	  class CreateGenres < ActiveRecord::Migration
-		def self.change
-		  create_table :genres do |t|
-			t.text   :i18n	# stores ALL the translated attributes; persisted as a Hash
+```ruby
+class CreateGenres < ActiveRecord::Migration
+  def self.change
+    create_table :genres do |t|
+      t.text   :i18n	# stores ALL the translated attributes; persisted as a Hash
 
-			t.timestamps
-		  end
-		end
-	  end
+      t.timestamps
+    end
+  end
+end
+```
 
 ### Example 2
 
@@ -71,17 +75,19 @@ This way you can always do SQL queries against the values in the `I18n.default_l
 
 To do this, using the same model as in example 1, you can modify your migration as follows:
 
-	  class CreateGenres < ActiveRecord::Migration
-		def self.change
-		  create_table :genres do |t|
-			t.text   :i18n	# stores the translated attributes; persisted as a Hash
+```ruby
+class CreateGenres < ActiveRecord::Migration
+  def self.change
+    create_table :genres do |t|
+      t.text   :i18n	# stores the translated attributes; persisted as a Hash
 
-            t.string :name  # allows us to do SQL queries
+      t.string :name  # allows us to do SQL queries
 
-			t.timestamps
-		  end
-		end
-	  end
+      t.timestamps
+    end
+  end
+end
+```
 
 # Usage
 
@@ -92,44 +98,47 @@ In your code you can modify the values of your translated attributes in two ways
 Using the built-in getter/setter methods you can set the values for any locale directly, even though
 you are using your own locale.
 
-	  I18n.locale = :en
-	  g = Genre.first
-	  g.name = 'science fiction'
+```ruby
+I18n.locale = :en
+g = Genre.first
+g.name = 'science fiction'
 
-	  # even though you are using the :en locale, you can still set the values for other locales:
+# even though you are using the :en locale, you can still set the values for other locales:
 
-	  g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
-	  g.set_localized_attribute( :name, :ko, "공상 과학 소설" )
+g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
+g.set_localized_attribute( :name, :ko, "공상 과학 소설" )
 
-	  g.name       # => 'science fiction'
-	  g.name(:jp)  # => "サイエンスフィクション"
-	  g.name(:ko)  # => "공상 과학 소설"
+g.name       # => 'science fiction'
+g.name(:jp)  # => "サイエンスフィクション"
+g.name(:ko)  # => "공상 과학 소설"
 
-	  g.get_localized_attribute( :name, :jp )  # => "サイエンスフィクション"
-	  g.get_localized_attribute( :name, :ko )  # => "공상 과학 소설"
+g.get_localized_attribute( :name, :jp )  # => "サイエンスフィクション"
+g.get_localized_attribute( :name, :ko )  # => "공상 과학 소설"
+```
 
 ## Tweaking `I18n.locale`
 
 By manipulating the `I18n.locale`. This is what happens if you have user's with different locales entering values into a database.
 
-   The controller is just assigning the new value via `name=` , but `embedded_localization` gem takes care of storing it for the correct given locale.
+The controller is just assigning the new value via `name=` , but `embedded_localization` gem takes care of storing it for the correct given locale.
 
-	  I18n.locale = :en
-	  g = Genre.first
-	  g.name  # => 'science fiction'
+```ruby
+I18n.locale = :en
+g = Genre.first
+g.name  # => 'science fiction'
 
-	  I18n.locale = :jp
-	  g.name = "サイエンスフィクション"
+I18n.locale = :jp
+g.name = "サイエンスフィクション"
 
-	  I18n.locale = :ko
-	  g.name = "공상 과학 소설"
-	  g.name  # => "공상 과학 소설"
+I18n.locale = :ko
+g.name = "공상 과학 소설"
+g.name  # => "공상 과학 소설"
 
-	  I18n.locale = :jp
-	  g.name  # => "サイエンスフィクション"
+I18n.locale = :jp
+g.name  # => "サイエンスフィクション"
 
-	  I18n.locale = :en  # MAKE SURE to switch back to your default locale if you tweak it
-
+I18n.locale = :en  # MAKE SURE to switch back to your default locale if you tweak it
+```
 
 ## SQL Queries against Translated Fields
 
@@ -143,13 +152,15 @@ After defining the column, and running the migration, you need to populate the c
 
 See also Example 2 above.
 
-	  I18n.locale = :en
-	  g = Genre.first
-	  g.name = 'science fiction'   # in Example 2 this will be stored in the DB column :name as well
-	  ...
-	  g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
-	  ...
-	  scifi = Genre.where(:name => "science fiction").first
+```ruby
+I18n.locale = :en
+g = Genre.first
+g.name = 'science fiction'   # in Example 2 this will be stored in the DB column :name as well
+# ...
+g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
+# ...
+scifi = Genre.where(:name => "science fiction").first
+```
 
 Limitation: You can not search for the translated strings other than for your default locale.
 
@@ -159,12 +170,14 @@ Limitation: You can not search for the translated strings other than for your de
 
 Existing data can be migrated from an existing (not-translated) column, into a translated column with the same name as follows:
 
-	Genre.record_timestamps = false   # to not modify your existing timestamps
-	Genre.all.each do |g|
-	  g.name = g.name   # the right-hand-side fetches the translation from the i18n attribute hash
-	  g.save			# saves the :name attribute without updating the updated_at timestamp
-	end
-	Genre.record_timestamps = true
+```ruby
+Genre.record_timestamps = false   # to not modify your existing timestamps
+Genre.all.each do |g|
+  g.name = g.name   # the right-hand-side fetches the translation from the i18n attribute hash
+  g.save			# saves the :name attribute without updating the updated_at timestamp
+end
+Genre.record_timestamps = true
+```
 
 ## I18n fallbacks for empty translations
 
@@ -172,30 +185,31 @@ It is possible to enable fallbacks for empty translations. It will depend on the
 
 You can enable them by adding the next line to `config/application.rb` (or only `config/environments/production.rb` if you only want them in production)
 
-
-		config.i18n.fallbacks = true # falls back to I18n.default_locale
-
+```ruby
+config.i18n.fallbacks = true # falls back to I18n.default_locale
+```
 
 By default, `embedded_localization` will only use fallbacks when the translation value for the item you've requested is `nil`.
 
+```ruby
+class Genre < ActiveRecord::Base
+  translates :name, :description # , :fallbacks => true
+end
 
-		class Genre < ActiveRecord::Base
-		  translates :name, :description # , :fallbacks => true
-		end
+I18n.locale = :en
+g = Genre.first
+g.name  # => 'science fiction'
 
-		I18n.locale = :en
-		g = Genre.first
-		g.name  # => 'science fiction'
+I18n.locale = :jp
+g.name  # => "サイエンスフィクション"
 
-		I18n.locale = :jp
-		g.name  # => "サイエンスフィクション"
+I18n.locale = :de
+g.name  # => nil
 
-		I18n.locale = :de
-		g.name  # => nil
-
-		I18n.fallbacks = true
-		I18n.locale = :de
-		g.name  # => 'science fiction'
+I18n.fallbacks = true
+I18n.locale = :de
+g.name  # => 'science fiction'
+```
 
 ## Want some Candy?
 
@@ -211,10 +225,11 @@ Each class which uses `embedded_localization` will have these additional methods
 
 e.g.:
 
-     Genre.translated_attributes # => [:name,:description]
-     Genre.translated?  # => true
-     Genre.fallbacks?  # => false
-
+```ruby
+Genre.translated_attributes # => [:name,:description]
+Genre.translated?  # => true
+Genre.fallbacks?  # => false
+```
 
 ### Instance Methods
 
@@ -229,40 +244,39 @@ Each model instance of a class which uses `embedded_localization` will have thes
 
 e.g.:
 
-	g = Genre.where(:name => "science fiction").first
+```ruby
+g = Genre.where(:name => "science fiction").first
 
-	# check if an attribute is translated:
-	g.translated?(:name) # => true
+# check if an attribute is translated:
+g.translated?(:name) # => true
 
-	# which attributes are translated?
-	g.translated_attributes   # => [:description, :name]
+# which attributes are translated?
+g.translated_attributes   # => [:description, :name]
 
-	# check for which locales we have values: (spanning all translated fields)
-	g.translated_locales  # => [:en]
+# check for which locales we have values: (spanning all translated fields)
+g.translated_locales  # => [:en]
 
-	g.set_localized_attribute(:description, :de, "Ich liebe Science Fiction Filme")
+g.set_localized_attribute(:description, :de, "Ich liebe Science Fiction Filme")
 
-    # check again for which locales we have values: (spanning all translated fields)
-    g.translated_locales  # => [:en, :de]
+# check again for which locales we have values: (spanning all translated fields)
+g.translated_locales  # => [:en, :de]
 
-	# show details for which locales the attributes have values for:
-    #   for all attributes:
-	g.translation_coverage  # => {:name=>[:en], :description=>[:de]}
+# show details for which locales the attributes have values for:
+#   for all attributes:
+g.translation_coverage  # => {:name=>[:en], :description=>[:de]}
 
-	#   for a specific attribute:
-	g.translation_coverage(:name) # => [:en]
-	g.translation_coverage(:description)  # => [:de]
+#   for a specific attribute:
+g.translation_coverage(:name) # => [:en]
+g.translation_coverage(:description)  # => [:de]
 
-	# show where translations are missing:
-    #   for all attributes:
-	g.translation_missing   # => {:description=>[:en], :name=>[:de]}
+# show where translations are missing:
+#   for all attributes:
+g.translation_missing   # => {:description=>[:en], :name=>[:de]}
 
-	#   for a specific attribute:
-	g.translation_missing(:name)  # => [:de]
-	g.translation_missing(:description)  # => [:en]
-
-
-
+#   for a specific attribute:
+g.translation_missing(:name)  # => [:de]
+g.translation_missing(:description)  # => [:en]
+```
 
 #### translated_locales vs translation_coverage
 
@@ -282,35 +296,37 @@ For a new empty record, this will be empty.
 
 ##### Example
 
-	   I18n.locale = :jp
-	   g = Genre.first
-	   g.name  # => "サイエンスフィクション"
+```ruby
+I18n.locale = :jp
+g = Genre.first
+g.name  # => "サイエンスフィクション"
 
-	   g.name(:en)  # => 'science fiction'
-	   g.name(:ko)  # => "공상 과학 소설"
-	   g.name(:de)  # => nil
+g.name(:en)  # => 'science fiction'
+g.name(:ko)  # => "공상 과학 소설"
+g.name(:de)  # => nil
 
-	   g.translated_locales  # => [:en,:jp,:ko]
-	   g.translated_attributes # => [:name,:description]
-	   g.translated?  # => true
+g.translated_locales  # => [:en,:jp,:ko]
+g.translated_attributes # => [:name,:description]
+g.translated?  # => true
 
-	   g.translation_coverage
-	   # => {"name"=>["en", "ko", "jp"] , "description"=>["en", "de", "fr", "ko", "jp", "es"]}
+g.translation_coverage
+# => {"name"=>["en", "ko", "jp"] , "description"=>["en", "de", "fr", "ko", "jp", "es"]}
 
-	   g.translation_coverage(:name)
-	   # => {"name"=>["en", "ko", "jp"]}
+g.translation_coverage(:name)
+# => {"name"=>["en", "ko", "jp"]}
 
-	   g.translation_missing
-	   # => {"name"=>["de", "fr", "es"]}
+g.translation_missing
+# => {"name"=>["de", "fr", "es"]}
 
-	   g.translation_missing(:display)
-	   # => {}     # this indicates that there are no missing translations for the :display attribute
+g.translation_missing(:display)
+# => {}     # this indicates that there are no missing translations for the :display attribute
 
-	   g.get_localized_attribute(:name, :de)
-	   # => nil
+g.get_localized_attribute(:name, :de)
+# => nil
 
-	   g.set_localized_attribute(:name, :de, "Science-Fiction")
-	   # => "Science-Fiction"
+g.set_localized_attribute(:name, :de, "Science-Fiction")
+# => "Science-Fiction"
+```
 
 ## Changes
 

@@ -14,6 +14,8 @@ matrix:
     - rvm: 2.7.5
     - rvm: 3.0.3
     - rvm: 3.1.0
+    - rvm: 3.2.0
+    - rvm: 3.3.0
     - rvm: jruby-9.2.19.0
     - rvm: jruby-9.3.3.0
     - jruby-head

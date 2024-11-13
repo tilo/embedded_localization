@@ -16,3 +16,10 @@ task :spec_all do
 end
 
 task :default => :spec
+
+desc 'Run spec with coverage'
+task :coverage do
+  ENV['COVERAGE'] = 'true'
+  Rake::Task['spec'].execute
+  `open coverage/index.html`
+end

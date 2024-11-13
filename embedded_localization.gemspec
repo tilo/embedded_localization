@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.licenses = ['MIT']
   # specify any dependencies here; for example:
+  spec.add_development_dependency "codecov"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "activerecord", ">= 6"
   spec.add_development_dependency "i18n"

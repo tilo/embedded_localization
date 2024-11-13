@@ -1,6 +1,17 @@
 require 'active_record'
 require 'i18n'
 
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/spec/'
+  add_filter "/pkg/"
+end
+
+if ENV['CI'] == 'true' || ENV['CODECOV_TOKEN']
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
 require 'embedded_localization'
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"

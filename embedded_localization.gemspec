@@ -2,26 +2,31 @@
 $:.push File.expand_path("../lib", __FILE__)
 require "embedded_localization/version"
 
-Gem::Specification.new do |s|
-  s.name        = "embedded_localization"
-  s.version     = EmbeddedLocalization::VERSION
-  s.authors     = ["Tilo Sloboda"]
-  s.email       = ["tilo.sloboda@gmail.com"]
-  s.homepage    = "https://github.com/tilo/embedded_localization"
-  s.summary     = %q{Rails I18n: library for embedded ActiveRecord model/data translation}
-  s.description = %q{Rails I18n: Embedded_Localization for ActiveRecord is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!}
+Gem::Specification.new do |spec|
+  spec.name        = "embedded_localization"
+  spec.version     = EmbeddedLocalization::VERSION
+  spec.authors     = ["Tilo Sloboda"]
+  spec.email       = ["tilo.sloboda@gmail.com"]
+  spec.homepage    = "https://github.com/tilo/embedded_localization"
+  spec.summary     = %q{Rails I18n: library for embedded ActiveRecord model/data translation}
+  spec.description = %q{Rails I18n: Embedded_Localization for ActiveRecord is very lightweight, and allows you to transparently store translations of attributes right inside each record -- no extra database tables needed to store the localization data!}
 
-  # s.platform = Gem::Platform::RUBY
+  # spec.platform = Gem::Platform::RUBY
+  spec.required_ruby_version = ">= 2.5.0"
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
-  s.licenses = ['MIT','GPL-2']
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "https://github.com/tilo/embedded_localization/blob/main/CHANGELOG.md"
+
+  spec.files         = `git ls-files`.split("\n")
+  spec.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  spec.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+  spec.licenses = ['MIT']
   # specify any dependencies here; for example:
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "activerecord", "~> 5.1"
-  s.add_development_dependency "i18n"
-  s.add_development_dependency "sqlite3"
-  # s.add_runtime_dependency "rest-client"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "activerecord", ">= 6"
+  spec.add_development_dependency "i18n"
+  spec.add_development_dependency "sqlite3"
+  # spec.add_runtime_dependency "rest-client"
 end

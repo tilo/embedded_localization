@@ -1,9 +1,5 @@
-require 'rubygems'
 require 'active_record'
 require 'i18n'
-require 'bundler/setup'
-
-Bundler.require(:default)
 
 require 'embedded_localization'
 

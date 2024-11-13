@@ -24,7 +24,7 @@ If your requirements are different, this approach might not work for you. In tha
 
 ## Requirements
 
-* ActiveRecord >= 6  
+* ActiveRecord >= 6  # including 7.x
 * [I18n](http://guides.rubyonrails.org/i18n.html)
 
 ## Installation

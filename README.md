@@ -1,7 +1,5 @@
 # Embedded Localization
 
-[![Build Status](https://secure.travis-ci.org/tilo/embedded_localization.png?branch=master)](http://travis-ci.org/tilo/embedded_localization) [![Gem Version](https://badge.fury.io/rb/embedded_localization.svg)](http://badge.fury.io/rb/embedded_localization)
-
 `embedded_localization` is compatible with Rails 6.x, 7.x, and adds model translations to ActiveRecord.  `embedded_localization` is compatible with and builds on the new [I18n API in Ruby on Rails](http://guides.rubyonrails.org/i18n.html)
 
 `embedded_localization` is very lightweight, and allows you to transparently store translations of attributes right inside each record — no extra database tables needed to store the localization data! Make sure that your database default encoding is UTF-8 or UFT-16.

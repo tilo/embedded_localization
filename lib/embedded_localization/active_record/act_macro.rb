@@ -23,7 +23,7 @@ module EmbeddedLocalization
         # ::Rails::Railtie.subclasses.map(&:to_s).include?("ActiveRecord::Railtie")
         #+
 
-        serialize :i18n   # we should also protect it from direct assignment by the user
+        serialize :i18n, coder: YAML, type: Hash   # we should also protect it from direct assignment by the user
 
         #-
         # if Mongoid::Document is in the list of classes which extends the class we are included into:

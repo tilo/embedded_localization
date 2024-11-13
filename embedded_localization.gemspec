@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = "https://github.com/tilo/embedded_localization/blob/main/CHANGELOG.md"
+  spec.metadata["changelog_uri"] = "https://github.com/tilo/embedded_localization/blob/master/CHANGELOG.md"
 
   spec.files         = `git ls-files`.split("\n")
   spec.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

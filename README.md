@@ -2,11 +2,11 @@
 
 [![codecov](https://codecov.io/gh/tilo/embedded_localization/graph/badge.svg?token=MX3ULB0S1Y)](https://codecov.io/gh/tilo/embedded_localization) [![Gem Version](https://badge.fury.io/rb/embedded_localization.svg)](http://badge.fury.io/rb/embedded_localization)
 
-`embedded_localization` allows you to store your translations directly in the same record. 
+`embedded_localization` allows you to store your translations directly insight each record. 
 
-`embedded_localization` is compatible with Rails 6.x, 7.x, and adds model translations to ActiveRecord.  `embedded_localization` is compatible with and builds on the new [I18n API in Ruby on Rails](http://guides.rubyonrails.org/i18n.html)
+`embedded_localization` is compatible with Rails 6.x, 7.x, and adds model translations to ActiveRecord, and is compatible with and builds on the [I18n API in Ruby on Rails](http://guides.rubyonrails.org/i18n.html)
 
-`embedded_localization` is very lightweight, and allows you to transparently store translations of attributes right inside each record — no extra database tables needed to store the localization data! Make sure that your database default encoding is UTF-8 or UFT-16.
+`embedded_localization` is very lightweight, and allows you to transparently store multiple translations of attributes right inside each record — no extra database tables needed to store the localization data! Make sure that your database default encoding is UTF-8 or UFT-16.
 
 Model translations with `embedded_localization` use default ActiveRecord features and do not limit any ActiveRecord functionality.
 
@@ -15,7 +15,7 @@ On top of that, you also get tools for checking into which locales an attribute 
 
 ## Motivation
 
-One real-life scenario is that you have a SaaS system which needs custom text for each company, which also needs to be translated in to several languages. Another scenario is that you have dynamic content that needs to be translated.
+One real-life scenario is that you have a SaaS system which needs custom text for each company, which also needs to be translated in to several languages. Product translations are another use case, as well as movies, books, TV-shows, etc. Another scenario is that you have dynamic content that needs to be translated.
 
 A recent project needed some localization support for ActiveRecord model data, but I did not want to clutter the schema with one additional table for each translated model, as the globalize gem requires.  A second requirement was to allow SQL queries of the fields using the default locale.
 

@@ -1,3 +1,4 @@
+require "active_record"
 require "embedded_localization/version"
 require 'extensions/hash'
 

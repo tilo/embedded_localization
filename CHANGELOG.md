@@ -1,7 +1,10 @@
 # EmbeddedLocalization CHANGE LOG
 
+## 1.3.1 (2024-11-26)
+ * [Issue 14](https://github.com/tilo/embedded_localization/pull/14) Fix active support proxy object deprecation (thanks to [Romain Morlevat](https://github.com/RomainMorlevat))
+
 ## 1.3.0 (2024-11-13)
-  - fixed ([issue 10](https://github.com/tilo/embedded_localization/issues)) to support Rails >= 7.1 (thanks to [Romain Morlevat](https://github.com/RomainMorlevat))
+ * fixed ([issue 10](https://github.com/tilo/embedded_localization/issues)) to support Rails >= 7.1 (thanks to [Romain Morlevat](https://github.com/RomainMorlevat))
   
 ## 1.2.2 (2022-04-25)
 * improved docs

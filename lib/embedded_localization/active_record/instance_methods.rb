@@ -4,19 +4,20 @@ module EmbeddedLocalization
 
       # Returns the translation of attr_name for the given locale; nil if there is none.
       # - will convert given locale to symbol, e.g. "en","En" to :en
-      # - with `fallbacks: true`, a locale without any translations returns the I18n.default_locale value
-      #   (we only support fallbacks to I18n.default_locale for now)
+      # - with fallbacks (see ClassMethods#fallbacks?), a nil translation is looked up in the fallback locales instead:
+      #   the chain configured in I18n.fallbacks, then I18n.default_locale (see ClassMethods#fallback_locales)
       def get_localized_attribute(attr_name, locale)
         attr_name = attr_name.to_sym
         locale    = normalize_locale(locale)
 
-        if self.i18n.has_key?(locale)
-          self.i18n[locale][attr_name]    # nil when this locale has no translation for attr_name
-        elsif self.class.fallbacks? && self.i18n[I18n.default_locale]
-          self.i18n[I18n.default_locale][attr_name]
-        else
-          nil
+        translation = translation_for(attr_name, locale)
+        return translation unless translation.nil? && self.class.fallbacks?
+
+        self.class.fallback_locales(locale).each do |fallback_locale|
+          translation = translation_for(attr_name, fallback_locale)
+          return translation unless translation.nil?
         end
+        nil
       end
 
       # Sets the translation of attr_name for the given locale.
@@ -120,6 +121,12 @@ module EmbeddedLocalization
 
       def normalize_locale(locale)
         locale.is_a?(String) ? locale.downcase.to_sym : locale   # ensure that locale is always a symbol
+      end
+
+      # the stored translation of attr_name in locale; nil when the locale or the attribute is not there
+      def translation_for(attr_name, locale)
+        translations = self.i18n[locale]
+        translations[attr_name] if translations
       end
 
       # did the user define a DB column with the name of the translated attribute?

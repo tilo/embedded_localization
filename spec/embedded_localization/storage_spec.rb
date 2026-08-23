@@ -32,6 +32,23 @@ describe 'translation storage' do
         movie_class.translation_storage.should eq storage[:storage]
       end
 
+      it 'reports the attribute type of the i18n column' do
+        expected_type = { yaml: :text, json: :json, jsonb: :json, hstore: :hstore }[storage[:storage]]
+        genre_class.type_for_attribute('i18n').type.should eq expected_type
+        movie_class.type_for_attribute('i18n').type.should eq expected_type
+      end
+
+      if storage[:storage] == :hstore
+        it 'ignores hstore keys without a "<locale>.<attribute>" structure' do
+          genre = genre_class.new(name: 'Science Fiction')
+          genre.save!
+          genre_class.connection.execute("UPDATE #{genre_class.table_name} SET i18n = i18n || hstore('junk', 'x') WHERE id = #{genre.id}")
+          reloaded = genre_class.find(genre.id)
+          reloaded.i18n.should eq({ en: { name: 'Science Fiction' } })
+          reloaded.name.should eq 'Science Fiction'
+        end
+      end
+
       describe 'a model without a native column for the translated attribute' do
         let(:genre) do
           g = genre_class.new

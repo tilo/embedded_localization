@@ -293,7 +293,7 @@ Afterwards, change the model to `translates :name, :description, storage: :jsonb
 
 ## I18n fallbacks for empty translations
 
-It is possible to enable fallbacks for empty translations. It will depend on the configuration setting you have set for I18n translations in your Rails config, or you can enable fallback when you define the translation fields. Currently we only support fallback to `I18n.default_locale`
+It is possible to enable fallbacks for empty translations. It will depend on the configuration setting you have set for I18n translations in your Rails config, or you can enable fallback when you define the translation fields. The fallback locales are the chain configured in `I18n.fallbacks` (e.g. `config.i18n.fallbacks = { 'de-AT' => 'de' }` makes `:"de-AT"` fall back to `:de`), followed by `I18n.default_locale`, which is always the last fallback; without a configured chain, the fallback is `I18n.default_locale` alone.
 
 You can enable them by adding the next line to `config/application.rb` (or only `config/environments/production.rb` if you only want them in production)
 
@@ -321,6 +321,22 @@ g.name  # => nil
 I18n.fallbacks = true
 I18n.locale = :de
 g.name  # => 'science fiction'
+```
+
+With a fallback chain (Rails: `config.i18n.fallbacks = { 'de-AT' => 'de' }`), the locales are tried in this order: the requested locale, its chain, then `I18n.default_locale`:
+
+```ruby
+class Genre < ActiveRecord::Base
+  translates :name, :description, :fallbacks => true
+end
+
+g = Genre.first
+g.name(:en)       # => 'science fiction'
+g.name(:de)       # => 'Science-Fiction'
+g.name(:"de-AT")  # => 'Science-Fiction'    (no :"de-AT" translation, so :de is used)
+g.name(:fr)       # => 'science fiction'    (no chain for :fr, so I18n.default_locale is used)
+
+Genre.fallback_locales(:"de-AT")  # => [:de, :en]   the locales tried after :"de-AT"
 ```
 
 ## Want some Candy?

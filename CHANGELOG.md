@@ -2,6 +2,8 @@
 
 ## 1.4.0 (2026-08-24)
  * new `storage:` option for `translates`: store the translations in a `json` / `jsonb` column (`storage: :json`) or in a PostgreSQL `hstore` column (`storage: :hstore`) instead of the YAML `text` column; the translated values are then queryable in SQL (see README, Example 3)
+ * fallbacks now follow the chain configured in `I18n.fallbacks` (e.g. `config.i18n.fallbacks = { 'de-AT' => 'de' }`: `:"de-AT"` → `:de` → `I18n.default_locale`); `I18n.default_locale` is always the last fallback, as before
+ * bug fix: fallbacks did not work for the current `I18n.locale` of a record loaded from the database, nor for a locale that had translations for other attributes; a `nil` translation now always falls back (as the README documented)
  * bug fix: with `fallbacks: true`, reading an attribute that has no translation in `I18n.default_locale` returned a Hash of nils on unsaved records instead of nil
  * bug fix: assigning a translation equal to the current value marked the record as changed on models without a DB column for that attribute (the fix for issue #4 only covered models with such a column)
  * bug fix: `set_localized_attribute(attr, locale, value)` compared against `I18n.locale` instead of `locale`; when the current locale already held the same value, the translation for `locale` was not stored

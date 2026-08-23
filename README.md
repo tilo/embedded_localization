@@ -1,6 +1,6 @@
 # Embedded Localization
 
-![Gem Version](https://img.shields.io/gem/v/embedded_localization) [![codecov](https://codecov.io/gh/tilo/embedded_localization/graph/badge.svg?token=MX3ULB0S1Y)](https://codecov.io/gh/tilo/embedded_localization) <!-- [![Downloads](https://img.shields.io/gem/dt/embedded_localization)](https://rubygems.org/gems/embedded_localization) --> [![RubyGems](https://img.shields.io/badge/RubyGems-embedded__localization-brightgreen?logo=rubygems&logoColor=white)](https://rubygems.org/gems/embedded_localization) [![Ruby Toolbox](https://img.shields.io/badge/Ruby%20Toolbox-embedded__localization-brightgreen)](https://www.ruby-toolbox.com/projects/embedded_localization)
+![Gem Version](https://img.shields.io/gem/v/embedded_localization) [![codecov](https://codecov.io/gh/tilo/embedded_localization/branch/main/graph/badge.svg?token=MX3ULB0S1Y)](https://codecov.io/gh/tilo/embedded_localization) <!-- [![Downloads](https://img.shields.io/gem/dt/embedded_localization)](https://rubygems.org/gems/embedded_localization) --> [![RubyGems](https://img.shields.io/badge/RubyGems-embedded__localization-brightgreen?logo=rubygems&logoColor=white)](https://rubygems.org/gems/embedded_localization) [![Ruby Toolbox](https://img.shields.io/badge/Ruby%20Toolbox-embedded__localization-brightgreen)](https://www.ruby-toolbox.com/projects/embedded_localization)
 
 `embedded_localization` allows you to store your translations directly insight each record. 
 

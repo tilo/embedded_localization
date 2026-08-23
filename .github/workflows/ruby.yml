@@ -68,6 +68,7 @@ jobs:
           - { rails: "8.1", ruby: "3.4" }
 
     runs-on: ubuntu-latest
+    environment: test   # CODECOV_TOKEN is a secret of the GitHub environment "test"; without this line secrets.CODECOV_TOKEN is empty
 
     services:
       postgres:

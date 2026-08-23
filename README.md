@@ -1,10 +1,10 @@
 # Embedded Localization
 
-[![codecov](https://codecov.io/gh/tilo/embedded_localization/graph/badge.svg?token=MX3ULB0S1Y)](https://codecov.io/gh/tilo/embedded_localization)  ![Gem Version](https://img.shields.io/gem/v/embedded_localization)  [View on RubyGems](https://rubygems.org/gems/embedded_localization)
+![Gem Version](https://img.shields.io/gem/v/embedded_localization) [![codecov](https://codecov.io/gh/tilo/embedded_localization/graph/badge.svg?token=MX3ULB0S1Y)](https://codecov.io/gh/tilo/embedded_localization) <!-- [![Downloads](https://img.shields.io/gem/dt/embedded_localization)](https://rubygems.org/gems/embedded_localization) --> [![RubyGems](https://img.shields.io/badge/RubyGems-embedded__localization-brightgreen?logo=rubygems&logoColor=white)](https://rubygems.org/gems/embedded_localization) [![Ruby Toolbox](https://img.shields.io/badge/Ruby%20Toolbox-embedded__localization-brightgreen)](https://www.ruby-toolbox.com/projects/embedded_localization)
 
 `embedded_localization` allows you to store your translations directly insight each record. 
 
-`embedded_localization` is compatible with Rails 6.x, 7.x, and adds model translations to ActiveRecord, and is compatible with and builds on the [I18n API in Ruby on Rails](http://guides.rubyonrails.org/i18n.html)
+`embedded_localization` is compatible with Rails 6.1, 7.x and 8.x, and adds model translations to ActiveRecord, and is compatible with and builds on the [I18n API in Ruby on Rails](http://guides.rubyonrails.org/i18n.html)
 
 `embedded_localization` is very lightweight, and allows you to transparently store multiple translations of attributes right inside each record — no extra database tables needed to store the localization data! Make sure that your database default encoding is UTF-8 or UFT-16.
 
@@ -26,7 +26,8 @@ If your requirements are different, this approach might not work for you. In tha
 
 ## Requirements
 
-* ActiveRecord >= 6  # including 7.x
+* Ruby >= 2.5  # Ruby 2.5 through 4.0, `head` and TruffleRuby are tested in CI
+* ActiveRecord >= 6  # ActiveRecord 6.1, 7.0, 7.1, 7.2, 8.0 and 8.1 are tested in CI, against SQLite and PostgreSQL
 * [I18n](http://guides.rubyonrails.org/i18n.html)
 
 ## Installation
@@ -39,6 +40,8 @@ To install Embedded_Localization, use:
 ## Translated Models
 
 Adding localization to a table is very simple. Just add a text field named `i18n` to the table, and you are ready to go!  This allows you to add translated fields via the helper method `translates` in the model.
+
+Instead of a text field, the `i18n` column can also be a `json` / `jsonb` column, or a PostgreSQL `hstore` column, which makes the translated values queryable in SQL — see [Example 3](#example-3).
 
 Optionally, you can also keep a DB field with the same name as the translated field, which will store the values for the `I18n.default_locale`.
 
@@ -90,6 +93,67 @@ class CreateGenres < ActiveRecord::Migration
   end
 end
 ```
+
+### Example 3
+
+Instead of the YAML text column, the translations can be stored in a `json` / `jsonb` column, or in a PostgreSQL `hstore` column. Tell `translates` which one you use with the `storage:` option:
+
+| `translates ... storage:` | `i18n` column type                                         | Stored as                                              | SQL example: find `name` translated to `:de`                                              |
+|---------------------------|------------------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `:yaml` (default)         | `text`                                                     | YAML: `{en: {name: "..."}, de: {name: "..."}}`         | not possible                                                                              |
+| `:json` or `:jsonb`       | `json` (SQLite, MySQL, PostgreSQL) or `jsonb` (PostgreSQL) | JSON: `{"en": {"name": "..."}, "de": {"name": "..."}}` | PostgreSQL: `i18n -> 'de' ->> 'name' = ?` ; SQLite: `json_extract(i18n, '$.de.name') = ?` |
+| `:hstore`                 | `hstore` (PostgreSQL)                                      | flat keys: `"en.name" => "...", "de.name" => "..."`    | `i18n -> 'de.name' = ?`                                                                   |
+
+```ruby
+class CreateGenres < ActiveRecord::Migration[7.1]
+  def change
+    create_table :genres do |t|
+      t.jsonb  :i18n    # stores ALL the translated attributes; persisted as JSON  (`t.json :i18n` on SQLite / MySQL, or on PostgreSQL if you prefer json over jsonb)
+
+      t.timestamps
+    end
+  end
+end
+
+class Genre < ActiveRecord::Base
+  translates :name, :description, storage: :json     # :json for json and jsonb columns (:jsonb is accepted as well), :hstore for an hstore column
+end
+
+Genre.where("i18n -> 'de' ->> 'name' = ?", "Science-Fiction")         # PostgreSQL json / jsonb
+Genre.where("json_extract(i18n, '$.de.name') = ?", "Science-Fiction")   # SQLite json
+```
+
+For an `hstore` column, the migration needs `enable_extension 'hstore'`, and each translation is stored under the key `"<locale>.<attribute>"`, because `hstore` cannot nest:
+
+```ruby
+class CreateGenres < ActiveRecord::Migration[7.1]
+  def change
+    enable_extension 'hstore'
+
+    create_table :genres do |t|
+      t.hstore :i18n    # stores ALL the translated attributes; persisted as "en.name" => "...", "de.name" => "...", ...
+
+      t.timestamps
+    end
+  end
+end
+
+class Genre < ActiveRecord::Base
+  translates :name, :description, storage: :hstore
+end
+
+Genre.where("i18n -> 'de.name' = ?", "Science-Fiction")
+```
+
+The extra DB column for the default locale from Example 2 (`t.string :name`) works the same way with all three storages.
+
+Notes:
+
+* In Ruby, the `i18n` Hash always has Symbol keys for locales and attributes, whatever the storage: `genre.i18n  # => {en: {name: "Science Fiction"}, de: {name: "Science-Fiction"}}`.
+* Existing tables keep working unchanged: the default is still the YAML `text` column. Changing the column type of an existing table means converting the stored YAML to JSON or hstore in a data migration; the gem does not do that for you.
+* `json` columns on MySQL should work the same way as on SQLite / PostgreSQL (ActiveRecord uses the same `json` attribute type), but MySQL is not part of the CI test matrix.
+* `Genre.translation_storage  # => :json` reports the storage of a model.
+
 
 # Usage
 
@@ -164,7 +228,20 @@ g.set_localized_attribute( :name, :jp, "サイエンスフィクション" )
 scifi = Genre.where(:name => "science fiction").first
 ```
 
-Limitation: You can not search for the translated strings other than for your default locale.
+Limitation: with the YAML text column (the default), you can not search for the translated strings other than for your default locale.
+
+With a `json` / `jsonb` / `hstore` column (see Example 3) every locale can be searched, and the extra DB column for the default locale is still possible on top of that:
+
+```ruby
+class Genre < ActiveRecord::Base
+  translates :name, :description, storage: :json     # or :hstore
+end
+
+Genre.where("i18n -> 'jp' ->> 'name' = ?", "サイエンスフィクション")         # PostgreSQL json / jsonb
+Genre.where("json_extract(i18n, '$.jp.name') = ?", "サイエンスフィクション")   # SQLite json
+Genre.where("i18n ->> '$.jp.name' = ?", "サイエンスフィクション")            # MySQL json (not covered by the CI tests)
+Genre.where("i18n -> 'jp.name' = ?", "サイエンスフィクション")                # PostgreSQL hstore (storage: :hstore)
+```
 
 
 ## Data Migration
@@ -180,6 +257,38 @@ Genre.all.each do |g|
 end
 Genre.record_timestamps = true
 ```
+
+### Converting the `i18n` column from YAML text to json / jsonb / hstore
+
+The gem does not convert stored data. This migration does it for a table that was created as in Example 1 or 2: it renames the old column, adds the new one, copies every record's translations, and drops the old column. The model inside the migration reads the old column with `serialize` (the way the gem wrote it) and writes the new column through `translates ... storage:`, so the conversion is the same for `:json`, `:jsonb` and `:hstore`.
+
+```ruby
+class ConvertGenresI18nToJsonb < ActiveRecord::Migration[7.1]
+  # a model for this migration only
+  class Genre < ActiveRecord::Base
+    serialize :i18n_yaml, coder: YAML, type: Hash          # the old column
+    translates :name, :description, storage: :jsonb        # the new column;  :json or :hstore work the same way
+  end
+
+  def up
+    rename_column :genres, :i18n, :i18n_yaml
+    add_column    :genres, :i18n, :jsonb                     # or :json / :hstore  (hstore also needs enable_extension 'hstore')
+    Genre.reset_column_information
+
+    Genre.find_each do |genre|
+      genre.update_column(:i18n, genre.i18n_yaml)            # update_column: no validations, no callbacks, timestamps untouched
+    end
+
+    remove_column :genres, :i18n_yaml
+  end
+
+  def down
+    raise ActiveRecord::IrreversibleMigration
+  end
+end
+```
+
+Afterwards, change the model to `translates :name, :description, storage: :jsonb` (or `:json` / `:hstore`). This migration is run by the test suite against SQLite (json) and PostgreSQL (json, jsonb, hstore), see `spec/embedded_localization/storage_conversion_spec.rb`.
 
 ## I18n fallbacks for empty translations
 
@@ -224,6 +333,7 @@ Each class which uses `embedded_localization` will have these additional methods
 * Klass.translated_attributes
 * Klass.translated?
 * Klass.fallbacks?
+* Klass.translation_storage
 
 e.g.:
 
@@ -231,6 +341,7 @@ e.g.:
 Genre.translated_attributes # => [:name,:description]
 Genre.translated?  # => true
 Genre.fallbacks?  # => false
+Genre.translation_storage  # => :yaml   (the `storage:` option given to `translates`: :yaml, :json, :jsonb or :hstore)
 ```
 
 ### Instance Methods

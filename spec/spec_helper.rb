@@ -10,10 +10,14 @@ end
 
 require 'embedded_localization'
 
-# DB=postgresql runs the suite against PostgreSQL, which is needed for the jsonb and hstore columns.
-# The connection details come from the PG* environment variables (PGHOST, PGUSER, PGPASSWORD, PGDATABASE).
-if ENV['DB'] == 'postgresql'
+# DB=postgresql runs the suite against PostgreSQL (needed for the jsonb and hstore columns); the connection details
+# come from the PG* environment variables (PGHOST, PGUSER, PGPASSWORD, PGDATABASE).
+# DB=mysql runs it against MySQL; connection details from MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE.
+case ENV['DB']
+when 'postgresql'
   ActiveRecord::Base.establish_connection adapter: 'postgresql', database: ENV.fetch('PGDATABASE', 'embedded_localization_test')
+when 'mysql'
+  ActiveRecord::Base.establish_connection adapter: 'mysql2', encoding: 'utf8mb4', host: ENV['MYSQL_HOST'], username: ENV.fetch('MYSQL_USER', 'root'), password: ENV['MYSQL_PASSWORD'], database: ENV.fetch('MYSQL_DATABASE', 'embedded_localization_test')
 else
   ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
 end

@@ -11,7 +11,8 @@ group :test do
   gem 'rspec'
   gem 'simplecov'
   gem 'i18n'
-  gem 'pg' if ENV['DB'] == 'postgresql'      # DB=postgresql bundle exec rake  (jsonb and hstore columns)
+  gem 'pg'     if ENV['DB'] == 'postgresql'   # DB=postgresql bundle exec rake  (jsonb and hstore columns)
+  gem 'mysql2' if ENV['DB'] == 'mysql'        # DB=mysql      bundle exec rake
 
   if ENV['RAILS_VERSION']                     # RAILS_VERSION=7.2 bundle exec rake
     gem 'activerecord', "~> #{ENV['RAILS_VERSION']}.0"

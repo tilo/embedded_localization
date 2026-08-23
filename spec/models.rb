@@ -49,6 +49,8 @@ if ENV['DB'] == 'postgresql'
   STORAGES << { name: 'json column',   storage: :json,   genre: JsonGenre,   movie: JsonMovie,   sql: ->(locale, attr) { "i18n -> '#{locale}' ->> '#{attr}' = ?" } }
   STORAGES << { name: 'jsonb column',  storage: :jsonb,  genre: JsonbGenre,  movie: JsonbMovie,  sql: ->(locale, attr) { "i18n -> '#{locale}' ->> '#{attr}' = ?" } }
   STORAGES << { name: 'hstore column', storage: :hstore, genre: HstoreGenre, movie: HstoreMovie, sql: ->(locale, attr) { "i18n -> '#{locale}.#{attr}' = ?" } }
+elsif ENV['DB'] == 'mysql'
+  STORAGES << { name: 'json column',   storage: :json,   genre: JsonGenre,   movie: JsonMovie,   sql: ->(locale, attr) { "JSON_UNQUOTE(JSON_EXTRACT(i18n, '$.#{locale}.#{attr}')) = ?" } }
 else
   STORAGES << { name: 'json column',   storage: :json,   genre: JsonGenre,   movie: JsonMovie,   sql: ->(locale, attr) { "json_extract(i18n, '$.#{locale}.#{attr}') = ?" } }
 end

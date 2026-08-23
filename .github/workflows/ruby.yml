@@ -50,7 +50,7 @@ jobs:
       - name: Run tests
         run: bundle exec rake
 
-  # Every supported ActiveRecord version, against SQLite (yaml and json columns) and PostgreSQL (yaml, json, jsonb and hstore columns).
+  # Every supported ActiveRecord version, against SQLite and MySQL (yaml and json columns) and PostgreSQL (yaml, json, jsonb and hstore columns).
   # RAILS_VERSION and DB are read by the Gemfile and spec/spec_helper.rb; `include` picks a Ruby each Rails version supports.
   rails_matrix:
 
@@ -58,7 +58,7 @@ jobs:
       fail-fast: false
       matrix:
         rails: ["6.1", "7.0", "7.1", "7.2", "8.0", "8.1"]
-        db: [sqlite3, postgresql]
+        db: [sqlite3, postgresql, mysql]
         include:
           - { rails: "6.1", ruby: "3.0" }
           - { rails: "7.0", ruby: "3.2" }
@@ -79,6 +79,14 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: embedded_localization_test
+        ports:
+          - 3306:3306
+        options: --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot -proot" --health-interval 10s --health-timeout 5s --health-retries 10
 
     env:
       RAILS_VERSION: ${{ matrix.rails }}
@@ -86,10 +94,16 @@ jobs:
       PGHOST: localhost
       PGUSER: postgres
       PGPASSWORD: postgres
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
 
     steps:
       - name: clone ${{ github.repository }}
         uses: actions/checkout@v7
+      - name: install the MySQL client library (needed to build the mysql2 gem)
+        if: matrix.db == 'mysql'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libmysqlclient-dev
       - name: setup Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:

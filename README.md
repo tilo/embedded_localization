@@ -27,7 +27,7 @@ If your requirements are different, this approach might not work for you. In tha
 ## Requirements
 
 * Ruby >= 2.5  # Ruby 2.5 through 4.0, `head` and TruffleRuby are tested in CI
-* ActiveRecord >= 6  # ActiveRecord 6.1, 7.0, 7.1, 7.2, 8.0 and 8.1 are tested in CI, against SQLite and PostgreSQL
+* ActiveRecord >= 6  # ActiveRecord 6.1, 7.0, 7.1, 7.2, 8.0 and 8.1 are tested in CI, against SQLite, PostgreSQL and MySQL
 * [I18n](http://guides.rubyonrails.org/i18n.html)
 
 ## Installation
@@ -98,11 +98,11 @@ end
 
 Instead of the YAML text column, the translations can be stored in a `json` / `jsonb` column, or in a PostgreSQL `hstore` column. Tell `translates` which one you use with the `storage:` option:
 
-| `translates ... storage:` | `i18n` column type                                         | Stored as                                              | SQL example: find `name` translated to `:de`                                              |
-|---------------------------|------------------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| `:yaml` (default)         | `text`                                                     | YAML: `{en: {name: "..."}, de: {name: "..."}}`         | not possible                                                                              |
-| `:json` or `:jsonb`       | `json` (SQLite, MySQL, PostgreSQL) or `jsonb` (PostgreSQL) | JSON: `{"en": {"name": "..."}, "de": {"name": "..."}}` | PostgreSQL: `i18n -> 'de' ->> 'name' = ?` ; SQLite: `json_extract(i18n, '$.de.name') = ?` |
-| `:hstore`                 | `hstore` (PostgreSQL)                                      | flat keys: `"en.name" => "...", "de.name" => "..."`    | `i18n -> 'de.name' = ?`                                                                   |
+| `translates ... storage:` | `i18n` column type                                         | Stored as                                              | SQL example: find `name` translated to `:de`                                                                                                           |
+|---------------------------|------------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `:yaml` (default)         | `text`                                                     | YAML: `{en: {name: "..."}, de: {name: "..."}}`         | not possible                                                                                                                                           |
+| `:json` or `:jsonb`       | `json` (SQLite, MySQL, PostgreSQL) or `jsonb` (PostgreSQL) | JSON: `{"en": {"name": "..."}, "de": {"name": "..."}}` | PostgreSQL: `i18n -> 'de' ->> 'name' = ?` ; SQLite: `json_extract(i18n, '$.de.name') = ?` ; MySQL: `JSON_UNQUOTE(JSON_EXTRACT(i18n, '$.de.name')) = ?` |
+| `:hstore`                 | `hstore` (PostgreSQL)                                      | flat keys: `"en.name" => "...", "de.name" => "..."`    | `i18n -> 'de.name' = ?`                                                                                                                                |
 
 ```ruby
 class CreateGenres < ActiveRecord::Migration[7.1]
@@ -119,8 +119,9 @@ class Genre < ActiveRecord::Base
   translates :name, :description, storage: :json     # :json for json and jsonb columns (:jsonb is accepted as well), :hstore for an hstore column
 end
 
-Genre.where("i18n -> 'de' ->> 'name' = ?", "Science-Fiction")         # PostgreSQL json / jsonb
-Genre.where("json_extract(i18n, '$.de.name') = ?", "Science-Fiction")   # SQLite json
+Genre.where("i18n -> 'de' ->> 'name' = ?", "Science-Fiction")                        # PostgreSQL json / jsonb
+Genre.where("json_extract(i18n, '$.de.name') = ?", "Science-Fiction")                  # SQLite json
+Genre.where("JSON_UNQUOTE(JSON_EXTRACT(i18n, '$.de.name')) = ?", "Science-Fiction")    # MySQL json
 ```
 
 For an `hstore` column, the migration needs `enable_extension 'hstore'`, and each translation is stored under the key `"<locale>.<attribute>"`, because `hstore` cannot nest:
@@ -151,7 +152,7 @@ Notes:
 
 * In Ruby, the `i18n` Hash always has Symbol keys for locales and attributes, whatever the storage: `genre.i18n  # => {en: {name: "Science Fiction"}, de: {name: "Science-Fiction"}}`.
 * Existing tables keep working unchanged: the default is still the YAML `text` column. Changing the column type of an existing table means converting the stored YAML to JSON or hstore in a data migration; the gem does not do that for you.
-* `json` columns on MySQL should work the same way as on SQLite / PostgreSQL (ActiveRecord uses the same `json` attribute type), but MySQL is not part of the CI test matrix.
+* `json` columns work on SQLite, MySQL and PostgreSQL; `jsonb` and `hstore` columns are PostgreSQL only. The test suite runs against all three databases (`DB=postgresql` / `DB=mysql`, default SQLite).
 * `Genre.translation_storage  # => :json` reports the storage of a model.
 
 
@@ -237,10 +238,10 @@ class Genre < ActiveRecord::Base
   translates :name, :description, storage: :json     # or :hstore
 end
 
-Genre.where("i18n -> 'jp' ->> 'name' = ?", "サイエンスフィクション")         # PostgreSQL json / jsonb
-Genre.where("json_extract(i18n, '$.jp.name') = ?", "サイエンスフィクション")   # SQLite json
-Genre.where("i18n ->> '$.jp.name' = ?", "サイエンスフィクション")            # MySQL json (not covered by the CI tests)
-Genre.where("i18n -> 'jp.name' = ?", "サイエンスフィクション")                # PostgreSQL hstore (storage: :hstore)
+Genre.where("i18n -> 'jp' ->> 'name' = ?", "サイエンスフィクション")                        # PostgreSQL json / jsonb
+Genre.where("json_extract(i18n, '$.jp.name') = ?", "サイエンスフィクション")                  # SQLite json
+Genre.where("JSON_UNQUOTE(JSON_EXTRACT(i18n, '$.jp.name')) = ?", "サイエンスフィクション")    # MySQL json
+Genre.where("i18n -> 'jp.name' = ?", "サイエンスフィクション")                               # PostgreSQL hstore (storage: :hstore)
 ```
 
 
@@ -288,7 +289,7 @@ class ConvertGenresI18nToJsonb < ActiveRecord::Migration[7.1]
 end
 ```
 
-Afterwards, change the model to `translates :name, :description, storage: :jsonb` (or `:json` / `:hstore`). This migration is run by the test suite against SQLite (json) and PostgreSQL (json, jsonb, hstore), see `spec/embedded_localization/storage_conversion_spec.rb`.
+Afterwards, change the model to `translates :name, :description, storage: :jsonb` (or `:json` / `:hstore`). This migration is run by the test suite against SQLite (json), MySQL (json) and PostgreSQL (json, jsonb, hstore), see `spec/embedded_localization/storage_conversion_spec.rb`.
 
 ## I18n fallbacks for empty translations
 

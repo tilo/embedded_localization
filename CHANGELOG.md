@@ -6,7 +6,7 @@
  * bug fix: assigning a translation equal to the current value marked the record as changed on models without a DB column for that attribute (the fix for issue #4 only covered models with such a column)
  * bug fix: `set_localized_attribute(attr, locale, value)` compared against `I18n.locale` instead of `locale`; when the current locale already held the same value, the translation for `locale` was not stored
  * removed the `Hash.zip` monkey patch (`lib/extensions/hash.rb`); the gem no longer adds methods to core classes
- * CI: ActiveRecord 6.1, 7.0, 7.1, 7.2, 8.0 and 8.1 are tested against SQLite and PostgreSQL; Ruby 2.5 through 4.0, `head` and TruffleRuby; coverage upload through `codecov/codecov-action` instead of the unmaintained `codecov` gem
+ * CI: ActiveRecord 6.1, 7.0, 7.1, 7.2, 8.0 and 8.1 are tested against SQLite, PostgreSQL and MySQL; Ruby 2.5 through 4.0, `head` and TruffleRuby; coverage upload through `codecov/codecov-action` instead of the unmaintained `codecov` gem
 
 ## 1.3.1 (2024-11-26)
  * [Issue 14](https://github.com/tilo/embedded_localization/pull/14) Fix active support proxy object deprecation (thanks to [Romain Morlevat](https://github.com/RomainMorlevat))

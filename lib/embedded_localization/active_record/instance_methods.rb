@@ -2,44 +2,42 @@ module EmbeddedLocalization
   module ActiveRecord
     module InstanceMethods
 
-      # - we only support fallbacks to I18n.default_locale for now
+      # Returns the translation of attr_name for the given locale; nil if there is none.
       # - will convert given locale to symbol, e.g. "en","En" to :en
-
+      # - with fallbacks (see ClassMethods#fallbacks?), a nil translation is looked up in the fallback locales instead:
+      #   the chain configured in I18n.fallbacks, then I18n.default_locale (see ClassMethods#fallback_locales)
       def get_localized_attribute(attr_name, locale)
-        locale = locale.downcase.to_sym  if locale.class == String # ensure that locale is always a symbol
+        attr_name = attr_name.to_sym
+        locale    = normalize_locale(locale)
 
-        if self.i18n.has_key?(locale)
-          if self.i18n[locale].keys.include?(attr_name)
-            self.i18n[locale][attr_name]
-          else
-            nil
-          end
-        else
-          if self.class.fallbacks? && self.i18n[ I18n.default_locale ]
-            return self.i18n[ I18n.default_locale ][attr_name]
-          else
-            return nil
-          end
+        translation = translation_for(attr_name, locale)
+        return translation unless translation.nil? && self.class.fallbacks?
+
+        self.class.fallback_locales(locale).each do |fallback_locale|
+          translation = translation_for(attr_name, fallback_locale)
+          return translation unless translation.nil?
         end
+        nil
       end
 
+      # Sets the translation of attr_name for the given locale.
       # - will convert given locale to symbol, e.g. "en","En" to :en
-
+      # - for I18n.default_locale, a DB column with the attribute's name (if the user defined one) is written too,
+      #   so that the default locale values can be used in SQL queries
+      # - does nothing when the value is unchanged, so the record stays clean and its timestamps are not touched
       def set_localized_attribute(attr_name, locale, new_translation)
-        locale = locale.downcase.to_sym  if locale.class == String # ensure that locale is always a symbol
+        attr_name = attr_name.to_sym
+        locale    = normalize_locale(locale)
 
-        # first check if nothing changed - then we can just return, so that timestamps and other records don't get touched
-        if self.i18n.class == Hash && (self.i18n[I18n.locale]) && (self.i18n[I18n.locale][attr_name.to_sym] == new_translation)
-          return if (I18n.locale != I18n.default_locale)
-          return if (I18n.locale == I18n.default_locale) && (read_attribute(attr_name) == new_translation) # both i18n and attr_name need to be equal to new_translation
-        end
+        return if translation_unchanged?(attr_name, locale, new_translation)
 
         self.i18n_will_change!     # for ActiveModel Dirty tracking
-        if self.attributes.has_key?(attr_name.to_s)  # if user has defined DB field with that name
-          write_attribute(attr_name , new_translation) if locale == I18n.default_locale
+        if native_column?(attr_name) && locale == I18n.default_locale
+          write_attribute(attr_name, new_translation)
         end
+        self.i18n ||= Hash.new
         self.i18n[locale] ||= Hash.new
-        self.i18n[locale][attr_name.to_sym] = new_translation
+        self.i18n[locale][attr_name] = new_translation
       end
 
       # Returns all locales used for translation of all documents of this class.
@@ -63,7 +61,6 @@ module EmbeddedLocalization
       #
       def translated?(name)
         self.class.translated?(name)
-#        self.class.instance_variable_get(translated_attribute_names).include?(name.to_sym)
       end
 
       # Purpose: to see the translation coverage
@@ -114,14 +111,37 @@ module EmbeddedLocalization
       end
 
       private
-      # initialized the serialized 'i18n' attribute with Hash of Hashes,
-      #   containing all pre-defined translated attributes with nil value
+
+      # initializes the `i18n` attribute with an empty Hash for I18n.locale and for I18n.default_locale
       def initialize_i18n_hashes
         self.i18n ||= Hash.new
-        self.i18n[ I18n.locale ] ||= Hash.new(Hash.zip(translated_attribute_names,[]))
-        if I18n.locale != I18n.default_locale
-          self.i18n[ I18n.default_locale ] ||= Hash.new(Hash.zip(translated_attribute_names,[]))
-        end
+        self.i18n[ I18n.locale ]         ||= Hash.new
+        self.i18n[ I18n.default_locale ] ||= Hash.new
+      end
+
+      def normalize_locale(locale)
+        locale.is_a?(String) ? locale.downcase.to_sym : locale   # ensure that locale is always a symbol
+      end
+
+      # the stored translation of attr_name in locale; nil when the locale or the attribute is not there
+      def translation_for(attr_name, locale)
+        translations = self.i18n[locale]
+        translations[attr_name] if translations
+      end
+
+      # did the user define a DB column with the name of the translated attribute?
+      def native_column?(attr_name)
+        has_attribute?(attr_name)
+      end
+
+      # true when the record already holds exactly this translation -- and, for I18n.default_locale on a model
+      # with a native column for the attribute, the column holds it too
+      def translation_unchanged?(attr_name, locale, new_translation)
+        return false unless self.i18n.is_a?(Hash) && self.i18n[locale]
+        return false unless self.i18n[locale][attr_name] == new_translation
+        return true  unless locale == I18n.default_locale && native_column?(attr_name)
+
+        read_attribute(attr_name) == new_translation
       end
 
     end

@@ -1,21 +1,11 @@
-require "bundler/gem_tasks"
+# frozen_string_literal: true
 
-require 'rubygems'
-require 'rake'
-
+require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 
-desc "Run RSpec"
-RSpec::Core::RakeTask.new do |t|
-  t.verbose = false
-end
+RSpec::Core::RakeTask.new(:spec)
 
-desc "Run specs for all test cases"
-task :spec_all do
-  system "rake spec"
-end
-
-task :default => :spec
+task default: :spec
 
 desc 'Run spec with coverage'
 task :coverage do

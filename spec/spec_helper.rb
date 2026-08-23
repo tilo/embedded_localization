@@ -1,3 +1,4 @@
+require 'logger'   # Rails 6.1 with concurrent-ruby >= 1.3.5: ActiveSupport::LoggerThreadSafeLevel needs ::Logger loaded first
 require 'active_record'
 require 'i18n'
 
@@ -7,14 +8,19 @@ SimpleCov.start do
   add_filter "/pkg/"
 end
 
-if ENV['CI'] == 'true' || ENV['CODECOV_TOKEN']
-  require 'codecov'
-  SimpleCov.formatter = SimpleCov::Formatter::Codecov
-end
-
 require 'embedded_localization'
 
-ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
+# DB=postgresql runs the suite against PostgreSQL (needed for the jsonb and hstore columns); the connection details
+# come from the PG* environment variables (PGHOST, PGUSER, PGPASSWORD, PGDATABASE).
+# DB=mysql runs it against MySQL; connection details from MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE.
+case ENV['DB']
+when 'postgresql'
+  ActiveRecord::Base.establish_connection adapter: 'postgresql', database: ENV.fetch('PGDATABASE', 'embedded_localization_test')
+when 'mysql'
+  ActiveRecord::Base.establish_connection adapter: 'mysql2', encoding: 'utf8mb4', host: ENV['MYSQL_HOST'], username: ENV.fetch('MYSQL_USER', 'root'), password: ENV['MYSQL_PASSWORD'], database: ENV.fetch('MYSQL_DATABASE', 'embedded_localization_test')
+else
+  ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
+end
 
 load File.dirname(__FILE__) + '/schema.rb'
 require File.dirname(__FILE__) + '/models.rb'

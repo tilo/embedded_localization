@@ -3,5 +3,9 @@
 *.bak
 *.gem
 .bundle
+.DS_Store
+.rspec_status
 Gemfile.lock
+coverage/
 pkg/*
+vendor/bundle

@@ -16,6 +16,11 @@ module EmbeddedLocalization
         translated_attribute_names.include?(name.to_sym)
       end
 
+      # How the `i18n` column is stored: :yaml (text column, the default), :json, :jsonb or :hstore
+      def translation_storage
+        (translation_options[:storage] || :yaml).to_sym
+      end
+
       # # determine if we are using fallbacks
       def fallbacks?
         i18n_fallbacks = I18n.backend.class.included_modules.map(&:to_s).include?('I18n::Backend::Fallbacks')   # will be true if config.i18n.fallbacks => true in config

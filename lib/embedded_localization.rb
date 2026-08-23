@@ -1,12 +1,16 @@
 require "active_record"
 require "embedded_localization/version"
-require 'extensions/hash'
 
 module EmbeddedLocalization
   autoload :ActiveRecord, 'embedded_localization/active_record'
+
+  # ActiveRecord attribute types for the `i18n` column when it is not a YAML text column
+  module Storage
+    autoload :Json,   'embedded_localization/storage/json'
+    autoload :Hstore, 'embedded_localization/storage/hstore'
+  end
 end
 
-# we're assuming for now only to be used with ActiveRecord 3, which is auto-required above
 ActiveRecord::Base.extend(EmbeddedLocalization::ActiveRecord::ActMacro)
 
 #-
@@ -30,4 +34,3 @@ ActiveRecord::Base.extend(EmbeddedLocalization::ActiveRecord::ActMacro)
 
 # not as general:
 # I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
-
